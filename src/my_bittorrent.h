@@ -3,7 +3,8 @@
 
 struct tracker
 {
-  char *ip;
-  char *por;
-  char *left;
-  char *info_hash;
+  char *url;
+  struct dictionnary *info;
+};
+
+#endif /*! MY_BITTORRENT_H */
