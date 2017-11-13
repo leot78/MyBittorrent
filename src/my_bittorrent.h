@@ -3,7 +3,4 @@
 
 struct tracker
 {
-  char *ip;
-  char *por;
-  char *left;
-  char *info_hash;
+
