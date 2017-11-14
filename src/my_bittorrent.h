@@ -10,4 +10,6 @@ struct tracker
   struct dictionnary *info;
 };
 
+char *compute_peer_id(void);
+
 #endif /*! MY_BITTORRENT_H */
