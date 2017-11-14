@@ -1,3 +1,4 @@
+# define _POSIX_C_SOURCE 200809L
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -5,82 +6,146 @@
 #include "dictionary.h"
 #include "list/list.h"
 
-size_t my_atoi(const char *str, char end, int *res)
+size_t my_atoi(char first_c, FILE *file, char end)
 {
-  *res = 0;
-  size_t i = 0;
-  int sign = 1;
+  size_t res = 0;
   
-  if (str[i] == '-')
-  {
-    sign = -1;
-    ++i;
-  }
+  char c = first_c;
+  res = res * 10 + c - '0';
+  while ((c = fgetc(file)) != end)
+    res = (res * 10) + c - '0';
 
-  while (str[i] != end)
-  {
-    *res = (*res * 10) + str[i] - '0';
-    ++i;
-  }
-
-  *res *= sign;
-  return i;
-}
-
-char *parse_string(const char *str, size_t *index)
-{
-  int len = 0;
-  *index += my_atoi(str + *index, ':', &len) + 1;
-  char *out = malloc(sizeof(char) * len + 1);
-  out = memcpy(out, str + *index, len);
-  out[len] = '\0';
-  *index += len - 1;
-  return out;
-}
-
-char *parse_number(const char *str, size_t *index)
-{
-  *index += 1;
-  size_t len = 0;
-  while (str[len + *index] != 'e')
-    len++;
-
-  char *res = malloc(sizeof(char) * len + 1);
-  res = memcpy(res, str + *index, len);
-  *index += len;
-  res[len] = '\0';
   return res;
 }
 
-struct dictionary *parse_dict(const char *str, size_t *index)
+char *parse_string(char first_c, FILE *file)
 {
-  *index += 1;
-  struct dictionary *dict = create_dict();
+  size_t len = my_atoi(first_c, file, ':');
+  char *out = malloc(sizeof(char) * len + 1);
+  for (size_t i = 0; i < len; ++i)
+   out[i] = fgetc(file);
 
-  while (str[*index] != 'e')
+  out[len] = 0;
+  return out;
+}
+
+char *parse_number(FILE *file)
+{
+  char *res = NULL;
+  size_t n = 0;
+  ssize_t len = getdelim(&res, &n, 'e', file);
+  res[len - 1] = 0;
+  return res;
+}
+
+struct dictionary *parse_dict(FILE *file)
+{
+  struct dictionary *dict = create_dict();
+  char c = 0;
+  while ((c = fgetc(file)) != 'e')
   {
-    char *key = parse_string(str, index);
+    char *key = parse_string(c, file);
     void *value = NULL;
 
     enum type t = CHAR;
-
-    *index += 1;
-    if (str[*index] == 'i')
-      value = parse_number(str, index);
-    else if (str[*index] == 'd')
+    c = fgetc(file);
+    if (c == 'i')
+      value = parse_number(file);
+    else if (c == 'd')
     {
       t = DICT;
-      value = parse_dict(str, index);
+      value = parse_dict(file);
+    }
+    else if (c == 'l')
+    {
+      t = LIST;
+      value = parse_list(file);
     }
     else
-      value = parse_string(str, index); 
+      value = parse_string(c, file); 
 
     add_elt(dict, key, value, t);
-    *index += 1;
   }
-
   return dict;
 }
+
+struct list *parse_list(FILE *file)
+{
+  struct list *l = init_list();
+  char c = 0;
+  while ((c = fgetc(file)) != 'e')
+  {
+    void *value = NULL;
+    enum type t = CHAR;
+    c = fgetc(file);
+    if (c == 'i')
+      value = parse_number(file);
+    else if (c == 'd')
+    {
+      t = DICT;
+      value = parse_dict(file);
+    }
+    else if (c == 'l')
+    {
+      t = LIST;
+      value = parse_list(file);
+    }
+    else
+      value = parse_string(c, file);
+
+    add_tail(l, create_elt(NULL, value, t));
+  }
+}
+
+
+
+void print_string(const char *s)
+{
+  size_t i = 0;
+  while (s[i] != '\0')
+  {
+    if (s[i] < 0x20 || s[i] > 0x7E)
+      printf("\\u%04X", s[i]);
+    else
+      putchar(s[i]);
+    ++i;
+  }
+}
+
+void print_json_list(struct list *l, int pad)
+{
+  printf("%*s{\n", pad, "");
+  struct node *cur = l->head;
+  for (; cur; cur = cur->next)
+  {
+    struct element *elt = cur->data;
+    printf("%*s\"", pad + 4, "");
+
+    if (elt->type == CHAR)
+    {
+      char *value = elt->value;
+      printf("\"");
+      print_string(value);
+      printf("\"");
+    }
+    else if (elt->type == DICT)
+    {
+      printf("\n");
+      struct dictionary *dict = elt->value;
+      print_json_dict(dict, pad + 8);
+    }
+    else if (elt->type == LIST)
+    {
+      printf("\n");
+      struct list *l = elt->value;
+      print_json_list(l, pad + 8);
+    }
+    if (cur->next)
+      printf(",");
+    printf("\n");
+  }
+  printf("%*s}\n", pad, "");
+
 
 void print_json_dict(struct dictionary *d, int pad)
 {
@@ -89,12 +154,16 @@ void print_json_dict(struct dictionary *d, int pad)
   for (; cur; cur = cur->next)
   {
     struct element *elt = cur->data;
-    printf("%*s\"%s\":", pad + 4, "", elt->key);
+    printf("%*s\"", pad + 4, "");
+    print_string(elt->key);
+    printf("\":");
 
     if (elt->type == CHAR)
     {
       char *value = elt->value;
-      printf("\"%s\"", value);
+      printf("\"");
+      print_string(value);
+      printf("\"");
     }
     else if (elt->type == DICT)
     {
@@ -102,12 +171,17 @@ void print_json_dict(struct dictionary *d, int pad)
       struct dictionary *dict = elt->value;
       print_json_dict(dict, pad + 8 + strlen(elt->key));
     }
+    else if (elt->type == LIST)
+    {
+      printf("\n");
+      struct list *l = elt->value;
+      print_json_list(l, pad + 8 + strlen(elt->key));
+    }
     if (cur->next)
       printf(",");
     printf("\n");
   }
   printf("%*s}\n", pad, "");
-
 }
 
 
@@ -118,12 +192,8 @@ int main(int argc, char **argv)
 
   FILE *file = fopen(argv[1], "r");
 
-  char buf[4096];
-
-  fgets(buf, 4096, file);
-
-  size_t i = 0;
-  struct dictionary *dict = parse_dict(buf, &i);
+  fgetc(file);
+  struct dictionary *dict = parse_dict(file);
 
   print_json_dict(dict, 0);
   delete_dict(dict);
