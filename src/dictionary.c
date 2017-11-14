@@ -6,7 +6,7 @@
 
 struct dictionary *create_dict(void)
 {
-  struct dictionary *d = malloc(sizeof(struct dictionnary));
+  struct dictionary *d = malloc(sizeof(struct dictionary));
   if (!d)
     return NULL;
 
@@ -26,7 +26,7 @@ struct element *create_elt(char *key, void *value, enum type t)
   return e;
 }
 
-void add_dict(struct dictonary *d, char *key, void *value, enum type t)
+void add_elt(struct dictionary *d, char *key, void *value, enum type t)
 {
   if (!d)
     return;
@@ -36,14 +36,14 @@ void add_dict(struct dictonary *d, char *key, void *value, enum type t)
   ++d->size;
 }
 
-struct element *get_dict(struct dictionary *d, char *key)
+struct element *get_value(struct dictionary *d, char *key)
 {
   struct node *cur = d->table->head;
   for (; cur; cur = cur->next)
   {
     struct element *elt = cur->data;
     if (strcmp(key, elt->key) == 0)
-      return element;
+      return elt;
   }
 
   return NULL;
