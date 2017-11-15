@@ -127,6 +127,7 @@ void print_json_list(struct list *l, int pad)
     {
       char *value = elt->value;
       //printf("%*s\"", pad + 4, "");
+      printf("\"");
       print_string(value);
       printf("\"");
     }
@@ -134,7 +135,7 @@ void print_json_list(struct list *l, int pad)
     {
       printf("\n");
       struct dictionary *dict = elt->value;
-      print_json_dict(dict, pad + );
+      print_json_dict(dict, pad + 4);
     }
     else if (elt->type == LIST)
     {
