@@ -188,17 +188,14 @@ void print_json_dict(struct dictionary *d, int pad)
   printf("%*s}", pad, "");
 }
 
-
-int main(int argc, char **argv)
+struct dictionnary *parse_file(const char *path)
 {
-  if (argc < 2)
-    return 0;
-
-  FILE *file = fopen(argv[1], "r");
+  FILE *file = fopen(path, "r");
 
   fgetc(file);
   struct dictionary *dict = parse_dict(file);
 
-  print_json_dict(dict, 0);
-  delete_dict(dict);
+  fclose(file);
+
+  return dict;
 }
