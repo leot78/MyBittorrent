@@ -195,7 +195,8 @@ struct dictionnary *parse_file(const char *path)
   fgetc(file);
   struct dictionary *dict = parse_dict(file);
 
-  fclose(file);
+  putchar('\n');
 
+  fclose(file);
   return dict;
 }

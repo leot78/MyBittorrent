@@ -50,6 +50,21 @@ struct element *get_value(struct dictionary *d, char *key)
   return NULL;
 }
 
+void delete_list(struct list *l)
+{
+  while (l->size)
+  {
+    struct element *elt = pop_front(l);
+    if (elt->type == DICT)
+      delete_dict(elt->value);
+    else if (elt->type == LIST)
+      delete_list(elt->value);
+    else
+      free(elt->value);
+  }
+  free(l);
+}
+
 void delete_dict(struct dictionary *d)
 {
   while (d->table->size)
@@ -59,7 +74,7 @@ void delete_dict(struct dictionary *d)
     if (elt->type == DICT)
       delete_dict(elt->value);
     else if (elt->type == LIST)
-      free_list(elt->value);
+      delete_list(elt->value);
     else
       free(elt->value);
   }
