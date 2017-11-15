@@ -1,4 +1,3 @@
-#include <math.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -16,11 +15,9 @@ char *compute_peer_id(void)
     seeded = 1;
   }
   int r = rand();
-  double min_size = pow(10, PEER_ID_POSTLEN - 1);
-  double max_size = pow(10, PEER_ID_POSTLEN) - 1;
-  long diff = max_size - min_size;
+  long diff = PEER_ID_MAXVALUE - PEER_ID_MINVALUE;
   double factor = diff / RAND_MAX;
-  long twelve_dig = r * factor + min_size;
+  long twelve_dig = r * factor + PEER_ID_MINVALUE;
   printf("rand = %ld\n", twelve_dig);
 
   char *pre_peer = PEER_ID_PREFIX;
