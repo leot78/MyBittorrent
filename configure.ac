@@ -1,6 +1,8 @@
 AC_INIT([My Bittorrent], [1,0], [], [my-bittorrent], [])
 
-AM_INIT_AUTOMAKE([foreign -Wall -Werror])
+AC_CONFIG_AUX_DIR(config)
+
+AM_INIT_AUTOMAKE([foreign -Wall -Werror subdir-objects])
 
 AC_PROG_CC_C99
 
@@ -19,8 +21,6 @@ AC_CHECK_FUNCS([getdelim])
 
 AC_CONFIG_HEADERS([config.h])
 
-AC_CONFIG_FILES([Makefile])
+AC_CONFIG_FILES([Makefile src/Makefile])
 
 AC_OUTPUT
-
-

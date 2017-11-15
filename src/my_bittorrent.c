@@ -3,17 +3,17 @@
 #include <err.h>
 
 #include "my_bittorrent.h"
-#include "dicionary.h"
+#include "dictionary.h"
 #include "parsing.h"
 
 
-enum options parse_options(int argc, char **argvi, int *index)
+enum options parse_options(int argc, char **argv, int *index)
 {
   enum options opt = NONE;
   int i = *index;
   while (argv[i][0] == '-')
   {
-    if (strcmp("--pretty-print-torrent", argv[i]) == 0)
+    if (strcmp("--pretty-print-torrent-file", argv[i]) == 0)
       opt = opt | PRINT;
     else if (strcmp("--dump-peers", argv[i]) == 0)
       opt = opt | PEERS;
@@ -41,11 +41,12 @@ int main(int argc, char **argv)
   enum options opt = parse_options(argc, argv, &index);
   char *filepath = argv[index];
 
-  struct dictionnary *dict = parse_file(filepath);
+  struct dictionary *dict = parse_file(filepath);
 
   if (opt & PRINT)
   {
     print_json_dict(dict, 0);
+    printf("\n");
   }
   else if (opt & PEERS)
   {
