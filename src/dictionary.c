@@ -22,6 +22,7 @@ struct element *create_elt(char *key, void *value, enum type t)
   e->type = t;
   e->value = value;
   e->key = key;
+  e->size = 0;
 
   return e;
 }

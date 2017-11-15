@@ -3,13 +3,14 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "parsing.h"
 #include "dictionary.h"
 #include "list/list.h"
 
 size_t my_atoi(char first_c, FILE *file, char end)
 {
   size_t res = 0;
-  
+
   char c = first_c;
   res = res * 10 + c - '0';
   while ((c = fgetc(file)) != end)
@@ -77,7 +78,6 @@ struct list *parse_list(FILE *file)
   {
     void *value = NULL;
     enum type t = CHAR;
-    c = fgetc(file);
     if (c == 'i')
       value = parse_number(file);
     else if (c == 'd')
@@ -95,9 +95,9 @@ struct list *parse_list(FILE *file)
 
     add_tail(l, create_elt(NULL, value, t));
   }
+
+  return l;
 }
-
-
 
 void print_string(const char *s)
 {
@@ -106,6 +106,8 @@ void print_string(const char *s)
   {
     if (s[i] < 0x20 || s[i] > 0x7E)
       printf("\\u%04X", s[i]);
+    else if (s[i] == '\"')
+      printf("\\\"");
     else
       putchar(s[i]);
     ++i;
@@ -114,17 +116,17 @@ void print_string(const char *s)
 
 void print_json_list(struct list *l, int pad)
 {
-  printf("%*s{\n", pad, "");
+  //printf("%*s[", pad, "");
+  printf("[ ");
   struct node *cur = l->head;
   for (; cur; cur = cur->next)
   {
     struct element *elt = cur->data;
-    printf("%*s\"", pad + 4, "");
 
     if (elt->type == CHAR)
     {
       char *value = elt->value;
-      printf("\"");
+      //printf("%*s\"", pad + 4, "");
       print_string(value);
       printf("\"");
     }
@@ -132,19 +134,20 @@ void print_json_list(struct list *l, int pad)
     {
       printf("\n");
       struct dictionary *dict = elt->value;
-      print_json_dict(dict, pad + 8);
+      print_json_dict(dict, pad + );
     }
     else if (elt->type == LIST)
     {
-      printf("\n");
       struct list *l = elt->value;
       print_json_list(l, pad + 8);
     }
     if (cur->next)
       printf(",");
-    printf("\n");
+    printf(" ");
   }
-  printf("%*s}\n", pad, "");
+  //printf("%*s]", pad, "");
+  printf("] ");
+}
 
 
 void print_json_dict(struct dictionary *d, int pad)
@@ -156,7 +159,7 @@ void print_json_dict(struct dictionary *d, int pad)
     struct element *elt = cur->data;
     printf("%*s\"", pad + 4, "");
     print_string(elt->key);
-    printf("\":");
+    printf("\" : ");
 
     if (elt->type == CHAR)
     {
@@ -173,7 +176,7 @@ void print_json_dict(struct dictionary *d, int pad)
     }
     else if (elt->type == LIST)
     {
-      printf("\n");
+      //printf("\n");
       struct list *l = elt->value;
       print_json_list(l, pad + 8 + strlen(elt->key));
     }
@@ -181,7 +184,7 @@ void print_json_dict(struct dictionary *d, int pad)
       printf(",");
     printf("\n");
   }
-  printf("%*s}\n", pad, "");
+  printf("%*s}", pad, "");
 }
 
 

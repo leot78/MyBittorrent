@@ -12,6 +12,7 @@ struct element
 {
   enum type type;
   void *value;
+  size_t size;
   char *key;
 };
 
