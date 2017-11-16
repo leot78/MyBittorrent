@@ -13,4 +13,6 @@ my_bittorrent_SOURCES = dictionary.c \
 												list/list.c \
 												list/op_list.c \
 												print_json.c \
-												print_json.h
+												print_json.h \
+												encode.c \
+												encode.h

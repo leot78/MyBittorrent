@@ -5,7 +5,8 @@ enum type
 {
   DICT,
   LIST,
-  CHAR
+  CHAR,
+  NUMBER
 };
 
 struct element
