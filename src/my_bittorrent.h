@@ -6,6 +6,8 @@
 #define PEER_ID_MINVALUE 100000000000
 #define PEER_ID_MAXVALUE 999999999999
 
+#include "dictionary.h"
+
 enum options
 {
   NONE = 0x000,
@@ -22,5 +24,6 @@ struct tracker
 };
 
 char *compute_peer_id(void);
+char *get_tracker_url(struct dictionary *dict);
 
 #endif /*! MY_BITTORRENT_H */

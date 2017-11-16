@@ -11,7 +11,7 @@ enum options parse_options(int argc, char **argv, int *index)
 {
   enum options opt = NONE;
   int i = *index;
-  while (argv[i][0] == '-')
+  while (i < argc && argv[i][0] == '-')
   {
     if (strcmp("--pretty-print-torrent-file", argv[i]) == 0)
       opt = opt | PRINT;
@@ -39,22 +39,35 @@ int main(int argc, char **argv)
   }
   int index = 1;
   enum options opt = parse_options(argc, argv, &index);
+  if (index >= argc)
+  {
+    printf("Usage : %s [options] [files]\n", argv[0]);
+    return 0;
+  }
   char *filepath = argv[index];
 
   struct dictionary *dict = parse_file(filepath);
+
+  char *url = get_tracker_url(dict);
+
+  printf("url: %s\n", url);
 
   if (opt & PRINT)
   {
     print_json_dict(dict, 0);
     printf("\n");
   }
-  else if (opt & PEERS)
+  if (opt & PEERS)
   {
-    //DUMP-PEERS
+    printf("--dump-peers option selected: not implemented yet\n");
   }
-  else if (opt & SEED)
+  if (opt & SEED)
   {
-    //SEED
+    printf("--seed option selected: not implemented yet\n");
+  }
+  if (opt & VERBOSE)
+  {
+    printf("--verbose option selected: not implemented yet\n");
   }
 
   delete_dict(dict);

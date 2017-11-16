@@ -3,8 +3,11 @@
 #include <string.h>
 #include <time.h>
 
+#include "dictionary.h"
+#include "list/list.h"
 #include "my_bittorrent.h"
 #include "my_string.h"
+#include "string.h"
 
 char *compute_peer_id(void)
 {
@@ -25,4 +28,16 @@ char *compute_peer_id(void)
   char *peer = concat(pre_peer, post_peer);
   free(post_peer);
   return peer;
+}
+
+char *get_tracker_url(struct dictionary *dict)
+{
+  struct node *cur = dict->table->head;
+  for (; cur; cur = cur->next)
+  {
+    struct element *elt = cur->data;
+    if (strcmp(elt->key, "announce") == 0)
+      return elt->value;
+  }
+  return NULL;
 }
