@@ -9,7 +9,7 @@ AC_PROG_CC_C99
 AC_CHECK_LIB([curl], [curl_easy_init], [],
     [AC_MSG_ERROR([Unable to find libcurl])])
 
-AC_CHECK_LIB([openssl], [EVP_sha1], [],
+AC_CHECK_LIB([ssl], [EVP_sha1], [],
     [AC_MSG_ERROR([Unable to find openssl])])
 
 AC_CHECK_HEADERS([openssl/evp.h])
