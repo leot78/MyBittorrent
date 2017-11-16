@@ -42,12 +42,11 @@ char *parse_number(FILE *file)
   return res;
 }
 
-struct element *get_elt(char *key, FILE *file)
+struct element *get_elt(char c, char *key, FILE *file)
 {
   void *value = NULL;
   enum type t = CHAR;
   size_t size = 0;
-  char c = fgetc(file);
   if (c == 'i')
   {
     t = NUMBER;
@@ -76,7 +75,8 @@ struct dictionary *parse_dict(FILE *file)
   while ((c = fgetc(file)) != 'e')
   {
     char *key = parse_string(c, file, NULL);
-    struct element *elt = get_elt(key, file);
+    c = fgetc(file);
+    struct element *elt = get_elt(c, key, file);
     add_elt(dict, elt);
   }
   return dict;
@@ -88,7 +88,7 @@ struct list *parse_list(FILE *file)
   char c = 0;
   while ((c = fgetc(file)) != 'e')
   {
-    struct element *elt = get_elt(NULL, file);
+    struct element *elt = get_elt(c, NULL, file);
     add_tail(l, elt);
   }
 

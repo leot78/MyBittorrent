@@ -10,13 +10,28 @@
 size_t nb_len(size_t nb)
 {
   size_t len = 1;
-  while (nb < 9)
+  while (nb > 9)
   {
     nb /= 10;
     ++len;
   }
 
   return len;
+}
+
+char *bencode_number(char *value, char *str, size_t *size, size_t *index)
+{
+  size_t number = atoi(value);
+  size_t size_nb = nb_len(number);
+  str = realloc(str, *size + size_nb + 2);
+  str[*size] = 'i';
+  *size += 1;
+  strncpy(str + *size, value, size_nb);
+  *size += size_nb;
+  str[*size] = 'e';
+  *size += 1;
+  *index = *size - 1;
+  return str;
 }
 
 char *bencode_string(char *value, size_t len, char *str, size_t *size)
@@ -49,9 +64,6 @@ char *bencode_list(struct list *l, char *str,
   for (; cur; cur = cur->next)
   {
     struct element *elt = cur->data;
-    str = bencode_string(elt->key, strlen(elt->key), str, size);
-    *index = *size - 1;
-
     if (elt->type == CHAR)
     {
       str = bencode_string(elt->value, elt->size, str, size);
@@ -61,6 +73,8 @@ char *bencode_list(struct list *l, char *str,
       str = bencode_list(elt->value, str, size, index);
     else if (elt->type == DICT)
       str = bencode_dict(elt->value, str, size, index);
+    else if (elt->type == NUMBER)
+      str = bencode_number(elt->value, str, size, index);
   }
 
   *index += 1;
@@ -76,8 +90,8 @@ char *bencode_dict(struct dictionary *dict, char *str,
   str = realloc(str, *size + 2);
 
   *size += 1;
-  *index += 1;
   str[*index] = 'd';
+  *index += 1;
 
   struct node *cur = dict->table->head;
   for (; cur; cur = cur->next)
@@ -95,6 +109,8 @@ char *bencode_dict(struct dictionary *dict, char *str,
       str = bencode_list(elt->value, str, size, index);
     else if (elt->type == DICT)
       str = bencode_dict(elt->value, str, size, index);
+    else if (elt->type == NUMBER)
+      str = bencode_number(elt->value, str, size, index);
   }
 
   *index += 1;

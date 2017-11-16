@@ -51,6 +51,10 @@ int main(int argc, char **argv)
   //char *url = get_tracker_url(tracker);
 
   //printf("url: %s\n", url);
+  //
+  unsigned char *hash = get_info_hash(tracker);
+  //hash = hash;
+  printf("hash: %s\n", hash);
 
   if (opt & PRINT)
   {

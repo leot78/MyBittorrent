@@ -8,9 +8,9 @@
 
 void print_string(const char *s, size_t size)
 {
-  if (size > 100)
+  /*if (size > 200)
     printf("<too much data>");
-  else if (!size)
+  else*/ if (!size)
     printf("%s", s);
   else
   {

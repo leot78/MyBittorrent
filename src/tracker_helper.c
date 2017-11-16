@@ -4,7 +4,9 @@
 #include <string.h>
 #include <time.h>
 
+#include "print_json.h"
 #include "dictionary.h"
+#include "encode.h"
 #include "list/list.h"
 #include "my_bittorrent.h"
 #include "my_string.h"
@@ -62,4 +64,29 @@ unsigned char *compute_sha1(char *info, size_t len)
   EVP_DigestFinal_ex(mdctx, md_value, &md_len);
   EVP_MD_CTX_free(mdctx);
   return md_value;
+}
+
+struct dictionary *get_info_dict(struct dictionary *d)
+{
+  struct node *cur = d->table->head;
+  for (; cur; cur = cur->next)
+  {
+    struct element *elt = cur->data;
+    if (strcmp(elt->key, "info") == 0)
+      return elt->value;
+  }
+  return NULL;
+}
+
+unsigned char *get_info_hash(struct tracker *tr)
+{
+  struct dictionary *info_dict = get_info_dict(tr->dict);
+
+  size_t size = 0;
+  size_t index = 0;
+  char *info_encode = bencode_dict(info_dict, NULL, &size, &index);
+  printf("info encode: ");
+  print_string(info_encode, size);
+  printf("\n");
+  return compute_sha1(info_encode, size);
 }
