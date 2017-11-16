@@ -5,7 +5,7 @@
 #include "my_bittorrent.h"
 #include "dictionary.h"
 #include "parsing.h"
-
+#include "print_json.h"
 
 enum options parse_options(int argc, char **argv, int *index)
 {
@@ -46,16 +46,15 @@ int main(int argc, char **argv)
   }
   char *filepath = argv[index];
 
-  struct dictionary *dict = parse_file(filepath);
+  struct tracker *tracker = parse_file(filepath);
 
-  char *url = get_tracker_url(dict);
+  //char *url = get_tracker_url(tracker);
 
-  printf("url: %s\n", url);
+  //printf("url: %s\n", url);
 
   if (opt & PRINT)
   {
-    print_json_dict(dict, 0);
-    printf("\n");
+    print_json(tracker);
   }
   if (opt & PEERS)
   {
@@ -70,6 +69,6 @@ int main(int argc, char **argv)
     printf("--verbose option selected: not implemented yet\n");
   }
 
-  delete_dict(dict);
+  delete_tracker(tracker);
   return 0;
 }

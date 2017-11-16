@@ -16,23 +16,22 @@ struct dictionary *create_dict(void)
   return d;
 }
 
-struct element *create_elt(char *key, void *value, enum type t)
+struct element *create_elt(char *key, void *value, enum type t, size_t size)
 {
   struct element *e = malloc(sizeof(struct element));
   e->type = t;
   e->value = value;
   e->key = key;
-  e->size = 0;
+  e->size = size;
 
   return e;
 }
 
-void add_elt(struct dictionary *d, char *key, void *value, enum type t)
+void add_elt(struct dictionary *d, struct element *elt)
 {
   if (!d)
     return;
 
-  struct element *elt = create_elt(key, value, t);
   add_tail(d->table, elt);
   ++d->size;
 }

@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "my_bittorrent.h"
 #include "parsing.h"
 #include "dictionary.h"
 #include "list/list.h"
@@ -19,7 +20,7 @@ size_t my_atoi(char first_c, FILE *file, char end)
   return res;
 }
 
-char *parse_string(char first_c, FILE *file)
+char *parse_string(char first_c, FILE *file, size_t *size)
 {
   size_t len = my_atoi(first_c, file, ':');
   char *out = malloc(sizeof(char) * len + 1);
@@ -27,6 +28,8 @@ char *parse_string(char first_c, FILE *file)
    out[i] = fgetc(file);
 
   out[len] = 0;
+  if (size)
+    *size = len;
   return out;
 }
 
@@ -45,10 +48,11 @@ struct dictionary *parse_dict(FILE *file)
   char c = 0;
   while ((c = fgetc(file)) != 'e')
   {
-    char *key = parse_string(c, file);
+    char *key = parse_string(c, file, NULL);
     void *value = NULL;
 
     enum type t = CHAR;
+    size_t size = 0;
     c = fgetc(file);
     if (c == 'i')
       value = parse_number(file);
@@ -63,9 +67,9 @@ struct dictionary *parse_dict(FILE *file)
       value = parse_list(file);
     }
     else
-      value = parse_string(c, file); 
+      value = parse_string(c, file, &size); 
 
-    add_elt(dict, key, value, t);
+    add_elt(dict, create_elt(key, value, t, size));
   }
   return dict;
 }
@@ -77,6 +81,7 @@ struct list *parse_list(FILE *file)
   while ((c = fgetc(file)) != 'e')
   {
     void *value = NULL;
+    size_t size = 0;
     enum type t = CHAR;
     if (c == 'i')
       value = parse_number(file);
@@ -91,110 +96,31 @@ struct list *parse_list(FILE *file)
       value = parse_list(file);
     }
     else
-      value = parse_string(c, file);
+      value = parse_string(c, file, &size);
 
-    add_tail(l, create_elt(NULL, value, t));
+    add_tail(l, create_elt(NULL, value, t, size));
   }
 
   return l;
 }
 
-void print_string(const char *s)
+char *get_info_string(FILE *file, size_t *size)
 {
-  size_t i = 0;
-  while (s[i] != '\0')
-  {
-    if (s[i] < 0x20 || s[i] > 0x7E)
-      printf("\\u%04X", s[i]);
-    else if (s[i] == '\"')
-      printf("\\\"");
-    else
-      putchar(s[i]);
-    ++i;
-  }
+  rewind(file);
+  return NULL;
 }
 
-void print_json_list(struct list *l, int pad)
-{
-  //printf("%*s[", pad, "");
-  printf("[ ");
-  struct node *cur = l->head;
-  for (; cur; cur = cur->next)
-  {
-    struct element *elt = cur->data;
-
-    if (elt->type == CHAR)
-    {
-      char *value = elt->value;
-      //printf("%*s\"", pad + 4, "");
-      printf("\"");
-      print_string(value);
-      printf("\"");
-    }
-    else if (elt->type == DICT)
-    {
-      printf("\n");
-      struct dictionary *dict = elt->value;
-      print_json_dict(dict, pad + 4);
-    }
-    else if (elt->type == LIST)
-    {
-      struct list *l = elt->value;
-      print_json_list(l, pad + 8);
-    }
-    if (cur->next)
-      printf(",");
-    printf(" ");
-  }
-  //printf("%*s]", pad, "");
-  printf("] ");
-}
-
-
-void print_json_dict(struct dictionary *d, int pad)
-{
-  printf("%*s{\n", pad, "");
-  struct node *cur = d->table->head;
-  for (; cur; cur = cur->next)
-  {
-    struct element *elt = cur->data;
-    printf("%*s\"", pad + 4, "");
-    print_string(elt->key);
-    printf("\" : ");
-
-    if (elt->type == CHAR)
-    {
-      char *value = elt->value;
-      printf("\"");
-      print_string(value);
-      printf("\"");
-    }
-    else if (elt->type == DICT)
-    {
-      printf("\n");
-      struct dictionary *dict = elt->value;
-      print_json_dict(dict, pad + 8 + strlen(elt->key));
-    }
-    else if (elt->type == LIST)
-    {
-      //printf("\n");
-      struct list *l = elt->value;
-      print_json_list(l, pad + 8 + strlen(elt->key));
-    }
-    if (cur->next)
-      printf(",");
-    printf("\n");
-  }
-  printf("%*s}", pad, "");
-}
-
-struct dictionary *parse_file(const char *path)
+struct tracker *parse_file(const char *path)
 {
   FILE *file = fopen(path, "r");
+  if (!file)
+    return NULL;
+
+  struct tracker *tr = malloc(sizeof(struct tracker));
 
   fgetc(file);
-  struct dictionary *dict = parse_dict(file);
+  tr->dict = parse_dict(file);
 
   fclose(file);
-  return dict;
+  return tr;
 }

@@ -30,8 +30,9 @@ char *compute_peer_id(void)
   return peer;
 }
 
-char *get_tracker_url(struct dictionary *dict)
+char *get_tracker_url(struct tracker *tracker)
 {
+  struct dictionary *dict = tracker->dict;
   struct node *cur = dict->table->head;
   for (; cur; cur = cur->next)
   {
@@ -40,4 +41,11 @@ char *get_tracker_url(struct dictionary *dict)
       return elt->value;
   }
   return NULL;
+}
+
+void delete_tracker(struct tracker *tr)
+{
+  delete_dict(tr->dict);
+  free(tr->info);
+  free(tr);
 }

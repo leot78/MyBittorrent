@@ -19,11 +19,12 @@ enum options
 
 struct tracker
 {
-  char *url;
-  struct dictionnary *info;
+  struct dictionary *dict;
+  char *info;
 };
 
 char *compute_peer_id(void);
-char *get_tracker_url(struct dictionary *dict);
+char *get_tracker_url(struct tracker *tracker);
+void delete_tracker(struct tracker *tr);
 
 #endif /*! MY_BITTORRENT_H */
