@@ -1,4 +1,5 @@
 bin_PROGRAMS = my-bittorrent
+
 my_bittorrent_CFLAGS = -Wall -Werror -std=c99 -pedantic
 my_bittorrent_SOURCES = dictionary.c \
 												dictionary.h \

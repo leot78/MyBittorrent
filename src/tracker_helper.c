@@ -53,13 +53,13 @@ void delete_tracker(struct tracker *tr)
 
 unsigned char *compute_sha1(char *info)
 {
-  unsigned char md_value[EVP_MAX_SIZE];
-  int md_len;
-  const ENV_MD *md = EVP_sha1();
+  unsigned char *md_value = malloc(EVP_MAX_MD_SIZE * sizeof(char));
+  unsigned md_len;
+  const EVP_MD *md = EVP_sha1();
   EVP_MD_CTX *mdctx = EVP_MD_CTX_new();
   EVP_DigestInit_ex(mdctx, md, NULL);
   EVP_DigestUpdate(mdctx, info, strlen(info));
-  EVP_DIGESTFinal_ex(mdctx, md_value, &md_len);
+  EVP_DigestFinal_ex(mdctx, md_value, &md_len);
   EVP_MD_CTX_free(mdctx);
   return md_value;
 }

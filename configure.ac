@@ -1,6 +1,6 @@
 AC_INIT([My Bittorrent], [1,0], [], [my-bittorrent], [])
 
-AC_CONFIG_AUX_DIR(config)
+AC_CONFIG_AUX_DIR(build_aux)
 
 AM_INIT_AUTOMAKE([foreign -Wall -Werror subdir-objects])
 
