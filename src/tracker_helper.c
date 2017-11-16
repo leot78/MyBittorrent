@@ -1,3 +1,4 @@
+#include <openssl/evp.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -48,4 +49,17 @@ void delete_tracker(struct tracker *tr)
   delete_dict(tr->dict);
   free(tr->info);
   free(tr);
+}
+
+unsigned char *compute_sha1(char *info)
+{
+  unsigned char md_value[EVP_MAX_SIZE];
+  int md_len;
+  const ENV_MD *md = EVP_sha1();
+  EVP_MD_CTX *mdctx = EVP_MD_CTX_new();
+  EVP_DigestInit_ex(mdctx, md, NULL);
+  EVP_DigestUpdate(mdctx, info, strlen(info));
+  EVP_DIGESTFinal_ex(mdctx, md_value, &md_len);
+  EVP_MD_CTX_free(mdctx);
+  return md_value;
 }
