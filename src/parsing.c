@@ -42,6 +42,33 @@ char *parse_number(FILE *file)
   return res;
 }
 
+struct element *get_elt(char *key, FILE *file)
+{
+  void *value = NULL;
+  enum type t = CHAR;
+  size_t size = 0;
+  char c = fgetc(file);
+  if (c == 'i')
+  {
+    t = NUMBER;
+    value = parse_number(file);
+  }
+  else if (c == 'd')
+  {
+    t = DICT;
+    value = parse_dict(file);
+  }
+  else if (c == 'l')
+  {
+    t = LIST;
+    value = parse_list(file);
+  }
+  else
+    value = parse_string(c, file, &size);
+
+  return create_elt(key, value, t, size);
+}
+
 struct dictionary *parse_dict(FILE *file)
 {
   struct dictionary *dict = create_dict();
@@ -49,27 +76,8 @@ struct dictionary *parse_dict(FILE *file)
   while ((c = fgetc(file)) != 'e')
   {
     char *key = parse_string(c, file, NULL);
-    void *value = NULL;
-
-    enum type t = CHAR;
-    size_t size = 0;
-    c = fgetc(file);
-    if (c == 'i')
-      value = parse_number(file);
-    else if (c == 'd')
-    {
-      t = DICT;
-      value = parse_dict(file);
-    }
-    else if (c == 'l')
-    {
-      t = LIST;
-      value = parse_list(file);
-    }
-    else
-      value = parse_string(c, file, &size); 
-
-    add_elt(dict, create_elt(key, value, t, size));
+    struct element *elt = get_elt(key, file);
+    add_elt(dict, elt);
   }
   return dict;
 }
@@ -80,34 +88,11 @@ struct list *parse_list(FILE *file)
   char c = 0;
   while ((c = fgetc(file)) != 'e')
   {
-    void *value = NULL;
-    size_t size = 0;
-    enum type t = CHAR;
-    if (c == 'i')
-      value = parse_number(file);
-    else if (c == 'd')
-    {
-      t = DICT;
-      value = parse_dict(file);
-    }
-    else if (c == 'l')
-    {
-      t = LIST;
-      value = parse_list(file);
-    }
-    else
-      value = parse_string(c, file, &size);
-
-    add_tail(l, create_elt(NULL, value, t, size));
+    struct element *elt = get_elt(NULL, file);
+    add_tail(l, elt);
   }
 
   return l;
-}
-
-char *get_info_string(FILE *file, size_t *size)
-{
-  rewind(file);
-  return NULL;
 }
 
 struct tracker *parse_file(const char *path)

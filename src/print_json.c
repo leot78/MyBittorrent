@@ -37,11 +37,12 @@ void print_json_list(struct list *l, int pad)
   {
     struct element *elt = cur->data;
 
-    if (elt->type == CHAR)
+    if (elt->type == CHAR || elt->type == NUMBER)
     {
-      printf("\"");
+      char *quote = (elt->type == NUMBER) ? "" : "\"";
+      printf("%s", quote);
       print_string(elt->value, elt->size);
-      printf("\"");
+      printf("%s", quote);
     }
     else if (elt->type == DICT)
     {
@@ -73,11 +74,12 @@ void print_json_dict(struct dictionary *d, int pad)
     print_string(elt->key, 0);
     printf("\" : ");
 
-    if (elt->type == CHAR)
+    if (elt->type == CHAR || elt->type == NUMBER)
     {
-      printf("\"");
+      char *quote = (elt->type == NUMBER) ? "" : "\"";
+      printf("%s", quote);
       print_string(elt->value, elt->size);
-      printf("\"");
+      printf("%s", quote);
     }
     else if (elt->type == DICT)
     {
