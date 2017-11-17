@@ -30,6 +30,15 @@ enum options parse_options(int argc, char **argv, int *index)
   return opt;
 }
 
+void print_hash(unsigned char *hash)
+{
+  for (int i = 0; i < 20; ++i)
+  {
+    printf("%02x", hash[i]);
+  }
+  printf("\n");
+}
+
 int main(int argc, char **argv)
 {
   if (argc < 2 || argc > 4)
@@ -51,10 +60,10 @@ int main(int argc, char **argv)
   //char *url = get_tracker_url(tracker);
 
   //printf("url: %s\n", url);
-  //
+  
   unsigned char *hash = get_info_hash(tracker);
   //hash = hash;
-  printf("hash: %s\n", hash);
+  print_hash(hash);
 
   if (opt & PRINT)
   {
