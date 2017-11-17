@@ -49,7 +49,6 @@ char *get_tracker_url(struct tracker *tracker)
 void delete_tracker(struct tracker *tr)
 {
   delete_dict(tr->dict);
-  free(tr->info);
   free(tr);
 }
 
@@ -87,5 +86,7 @@ unsigned char *get_info_hash(struct tracker *tr)
   //print_string(info_encode, size);
   //printf("info encode: ");
   //printf("\n");
-  return compute_sha1(info_encode, size);
+  unsigned char *hash = compute_sha1(info_encode, size);
+  free(info_encode);
+  return hash;
 }

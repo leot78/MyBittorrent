@@ -60,6 +60,7 @@ void delete_list(struct list *l)
       delete_list(elt->value);
     else
       free(elt->value);
+    free(elt);
   }
   free(l);
 }
@@ -76,6 +77,7 @@ void delete_dict(struct dictionary *d)
       delete_list(elt->value);
     else
       free(elt->value);
+    free(elt);
   }
   free_list(d->table);
   free(d);
