@@ -62,6 +62,7 @@ char *compute_sha1(char *info, size_t len)
   EVP_DigestUpdate(mdctx, info, len);
   EVP_DigestFinal_ex(mdctx, md_value, &md_len);
   EVP_MD_CTX_free(mdctx);
+  print_hash(md_value);
   return (char*)md_value;
 }
 
