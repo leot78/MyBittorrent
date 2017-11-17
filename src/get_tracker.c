@@ -73,7 +73,7 @@ char *get_tracker(char *urlp, char *sha1)
   CURL *handle = curl_easy_init();
   char *port = malloc(sizeof(char) * 6);
   port = strcpy_delim(port, urlp + sep_pos, '/');
-  urlp = "http://acu-tracker-1.pie.cri.epita.net:6969";
+  //urlp = "http://acu-tracker-1.pie.cri.epita.net:6969";
   char *request = prepare_request(port, urlp, sha1, handle);
   struct data_chunk buff;
   buff.size = 0;
@@ -86,7 +86,7 @@ char *get_tracker(char *urlp, char *sha1)
   curl_easy_setopt(handle, CURLOPT_WRITEFUNCTION, write_callback);
   curl_easy_setopt(handle, CURLOPT_WRITEDATA, &buff);
   curl_easy_setopt(handle, CURLOPT_ERRORBUFFER, &errbuff);                                                                                                       
- // curl_easy_setopt(handle, CURLOPT_VERBOSE, 1L);
+  curl_easy_setopt(handle, CURLOPT_VERBOSE, 1L);
   int res = curl_easy_perform(handle);
   curl_easy_cleanup(handle);
   curl_global_cleanup();

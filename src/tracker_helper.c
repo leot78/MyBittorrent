@@ -86,7 +86,7 @@ char *get_info_hash(struct tracker *tr)
   //print_string(info_encode, size);
   //printf("info encode: ");
   //printf("\n");
-  unsigned char *hash = compute_sha1(info_encode, size);
+  char *hash = compute_sha1(info_encode, size);
   free(info_encode);
   return hash;
 }

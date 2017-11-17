@@ -31,7 +31,7 @@ enum options parse_options(int argc, char **argv, int *index)
   return opt;
 }
 
-void print_hash(unsigned char *hash)
+void print_hash(char *hash)
 {
   for (int i = 0; i < 20; ++i)
   {
@@ -62,7 +62,7 @@ int main(int argc, char **argv)
 
   //printf("url: %s\n", url);
   //
-  unsigned char *hash = get_info_hash(tracker);
+  char *hash = get_info_hash(tracker);
   print_hash(hash);
   if (opt & PRINT)
   {
@@ -70,7 +70,7 @@ int main(int argc, char **argv)
   }
   if (opt & PEERS)
   {
-    //dump_peers(tracker);
+    dump_peers(tracker);
     //printf("--dump-peers option selected: not implemented yet\n");
   }
   if (opt & SEED)
@@ -82,7 +82,7 @@ int main(int argc, char **argv)
     printf("--verbose option selected: not implemented yet\n");
   }
 
-  free(hash);
+  //free(hash);
   delete_tracker(tracker);
   return 0;
 }
