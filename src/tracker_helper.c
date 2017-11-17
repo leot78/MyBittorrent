@@ -53,7 +53,7 @@ void delete_tracker(struct tracker *tr)
   free(tr);
 }
 
-unsigned char *compute_sha1(char *info, size_t len)
+char *compute_sha1(char *info, size_t len)
 {
   unsigned char *md_value = malloc(EVP_MAX_MD_SIZE * sizeof(char));
   unsigned md_len;
@@ -63,7 +63,7 @@ unsigned char *compute_sha1(char *info, size_t len)
   EVP_DigestUpdate(mdctx, info, len);
   EVP_DigestFinal_ex(mdctx, md_value, &md_len);
   EVP_MD_CTX_free(mdctx);
-  return md_value;
+  return (char*)md_value;
 }
 
 struct dictionary *get_info_dict(struct dictionary *d)
@@ -78,7 +78,7 @@ struct dictionary *get_info_dict(struct dictionary *d)
   return NULL;
 }
 
-unsigned char *get_info_hash(struct tracker *tr)
+char *get_info_hash(struct tracker *tr)
 {
   struct dictionary *info_dict = get_info_dict(tr->dict);
 

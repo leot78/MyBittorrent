@@ -48,28 +48,32 @@ size_t get_end_addr(char *urlp)
   return url;
 }*/
 
-char *prepare_request(char *port, char *urlp, unsigned char *info_hash,
+char *prepare_request(char *port, char *urlp, char *info_hash,
                       CURL *handle)
 {
   size_t total_size = strlen(urlp) + REQUEST_LEN;
   char *get_request = malloc(sizeof(char) * total_size);
+  char *peer_id = compute_peer_id();
+  peer_id = curl_easy_escape(handle, peer_id, 0);
   if (!get_request)
     err(1, "Could not allocate string request");
+  info_hash = curl_easy_escape(handle, info_hash, 0);
   sprintf(get_request,
-          "?peer_id=%s&info_hash=%s\n&port=%s&left=0\
-          &downloaded=0&uploaded=0&compact=1",
-          compute_peer_id(), info_hash, port);
-  get_request = curl_easy_escape(handle, get_request, 0);
+          "?peer_id=%s&info_hash=%s&port=6881&left=0",
+          peer_id, info_hash);
+  get_request = concat(get_request, "&downloaded=0&uploaded=0&compact=1");
+
   get_request = concat(urlp, get_request);
   return get_request;
 }
 
-char *get_tracker(char *urlp, unsigned char *sha1)
+char *get_tracker(char *urlp, char *sha1)
 {
   size_t sep_pos = get_end_addr(urlp);
   CURL *handle = curl_easy_init();
   char *port = malloc(sizeof(char) * 6);
   port = strcpy_delim(port, urlp + sep_pos, '/');
+  urlp = "http://acu-tracker-1.pie.cri.epita.net:6969";
   char *request = prepare_request(port, urlp, sha1, handle);
   struct data_chunk buff;
   buff.size = 0;
@@ -81,7 +85,8 @@ char *get_tracker(char *urlp, unsigned char *sha1)
   curl_easy_setopt(handle, CURLOPT_URL, request);
   curl_easy_setopt(handle, CURLOPT_WRITEFUNCTION, write_callback);
   curl_easy_setopt(handle, CURLOPT_WRITEDATA, &buff);
-  curl_easy_setopt(handle, CURLOPT_ERRORBUFFER, &errbuff);
+  curl_easy_setopt(handle, CURLOPT_ERRORBUFFER, &errbuff);                                                                                                       
+ // curl_easy_setopt(handle, CURLOPT_VERBOSE, 1L);
   int res = curl_easy_perform(handle);
   curl_easy_cleanup(handle);
   curl_global_cleanup();
