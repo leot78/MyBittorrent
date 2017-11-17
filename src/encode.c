@@ -7,10 +7,12 @@
 #include "list/list.h"
 #include "my_bittorrent.h"
 
+static size_t size;
+
 size_t nb_len(size_t nb)
 {
   size_t len = 1;
-  while (nb < 9)
+  while (nb > 9)
   {
     nb /= 10;
     ++len;
@@ -19,87 +21,98 @@ size_t nb_len(size_t nb)
   return len;
 }
 
-char *bencode_string(char *value, size_t len, char *str, size_t *size)
+char *bencode_number(char *value, char *str, size_t *index)
 {
-  size_t size_nb = nb_len(len);
-  str = realloc(str, *size + size_nb + 1 + len);
-  char *size_str = my_itoa(len);
-  strncpy(str + *size, size_str, size_nb);
-  *size += size_nb + 1;
-  free(size_str);
-  str[*size - 1] = ':';
-
-  if (len)
-    strncpy(str + *size, value, len);
+  size_t number = atoi(value);
+  size_t size_nb = nb_len(number);
+  size += size_nb + 2;
+  str = realloc(str, size);
   
-  *size += len;
+  str[*index] = 'i';
+  *index += 1;
+  
+  strncpy(str + *index, value, size_nb);
+  *index += size_nb;
+  
+  str[*index] = 'e';
+  *index += 1;
   return str;
 }
 
-char *bencode_list(struct list *l, char *str,
-                   size_t *size, size_t *index)
+char *bencode_string(char *value, size_t len, char *str, size_t *index)
 {
-  str = realloc(str, *size + 2);
+  size_t size_nb = nb_len(len);
 
-  *size += 1;
-  *index += 1;
+  size += size_nb + 1 + len;
+  str = realloc(str, size);
+
+  char *size_str = my_itoa(len);
+  strncpy(str + *index, size_str, size_nb);
+  *index += size_nb + 1;
+  free(size_str);
+  str[*index - 1] = ':';
+
+  if (len)
+    strncpy(str + *index, value, len);
+  
+  *index += len;
+  return str;
+}
+
+char *bencode_list(struct list *l, char *str, size_t *index)
+{
+  size += 2;
+  str = realloc(str, size);
+
   str[*index] = 'l';
+  *index += 1;
 
   struct node *cur = l->head;
   for (; cur; cur = cur->next)
   {
     struct element *elt = cur->data;
-    str = bencode_string(elt->key, strlen(elt->key), str, size);
-    *index = *size - 1;
-
     if (elt->type == CHAR)
-    {
-      str = bencode_string(elt->value, elt->size, str, size);
-      *index = *size - 1;
-    }
+      str = bencode_string(elt->value, elt->size, str, index);
     else if (elt->type == LIST)
-      str = bencode_list(elt->value, str, size, index);
+      str = bencode_list(elt->value, str, index);
     else if (elt->type == DICT)
-      str = bencode_dict(elt->value, str, size, index);
+      str = bencode_dict(elt->value, str, index);
+    else if (elt->type == NUMBER)
+      str = bencode_number(elt->value, str, index);
   }
 
-  *index += 1;
   str[*index] = 'e';
+  *index += 1;
 
-  *size += 1;
   return str;
 }
 
-char *bencode_dict(struct dictionary *dict, char *str,
-                   size_t *size, size_t *index)
+char *bencode_dict(struct dictionary *dict, char *str, size_t *index)
 {
-  str = realloc(str, *size + 2);
+  size += 2;
+  str = realloc(str, size);
 
-  *size += 1;
-  *index += 1;
   str[*index] = 'd';
+  *index += 1;
 
   struct node *cur = dict->table->head;
   for (; cur; cur = cur->next)
   {
     struct element *elt = cur->data;
-    str = bencode_string(elt->key, strlen(elt->key), str, size);
-    *index = *size - 1;
+    str = bencode_string(elt->key, strlen(elt->key), str, index);
 
     if (elt->type == CHAR)
-    {
-      str = bencode_string(elt->value, elt->size, str, size);
-      *index = *size - 1;
-    }
+      str = bencode_string(elt->value, elt->size, str, index);
     else if (elt->type == LIST)
-      str = bencode_list(elt->value, str, size, index);
+      str = bencode_list(elt->value, str, index);
     else if (elt->type == DICT)
-      str = bencode_dict(elt->value, str, size, index);
+      str = bencode_dict(elt->value, str, index);
+    else if (elt->type == NUMBER)
+      str = bencode_number(elt->value, str, index);
   }
 
-  *index += 1;
   str[*index] = 'e';
+  *index += 1;
 
-  *size += 1;
-  return str; 
+  return str;
 }

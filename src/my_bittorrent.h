@@ -39,5 +39,6 @@ char *compute_peer_id(void);
 char *get_tracker_url(struct tracker *tracker);
 void delete_tracker(struct tracker *tr);
 unsigned char *compute_sha1(char *info, size_t len);
+unsigned char *get_info_hash(struct tracker *tr);
 
 #endif /*! MY_BITTORRENT_H */
