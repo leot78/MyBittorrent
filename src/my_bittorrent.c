@@ -1,3 +1,4 @@
+#include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 #include <err.h>
@@ -61,16 +62,15 @@ int main(int argc, char **argv)
 
   //printf("url: %s\n", url);
   //
-  //unsigned char *hash = get_info_hash(tracker);
-  //hash = hash;
-  //printf("hash: %s\n", hash);
+  unsigned char *hash = get_info_hash(tracker);
+  print_hash(hash);
   if (opt & PRINT)
   {
     print_json(tracker);
   }
   if (opt & PEERS)
   {
-    dump_peers(tracker);
+    //dump_peers(tracker);
     //printf("--dump-peers option selected: not implemented yet\n");
   }
   if (opt & SEED)
@@ -82,6 +82,7 @@ int main(int argc, char **argv)
     printf("--verbose option selected: not implemented yet\n");
   }
 
+  free(hash);
   delete_tracker(tracker);
   return 0;
 }

@@ -53,7 +53,7 @@ char *bencode_string(char *value, size_t len, char *str, size_t *index)
   str[*index - 1] = ':';
 
   if (len)
-    strncpy(str + *index, value, len);
+    memcpy(str + *index, value, len);
   
   *index += len;
   return str;
