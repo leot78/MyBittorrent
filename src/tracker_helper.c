@@ -83,10 +83,9 @@ unsigned char *get_info_hash(struct tracker *tr)
   struct dictionary *info_dict = get_info_dict(tr->dict);
 
   size_t size = 0;
-  size_t index = 0;
-  char *info_encode = bencode_dict(info_dict, NULL, &index);
-  //printf("info encode: ");
+  char *info_encode = get_bencode(info_dict, &size);
   //print_string(info_encode, size);
+  //printf("info encode: ");
   //printf("\n");
   return compute_sha1(info_encode, size);
 }

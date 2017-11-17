@@ -116,3 +116,11 @@ char *bencode_dict(struct dictionary *dict, char *str, size_t *index)
 
   return str;
 }
+
+char *get_bencode(struct dictionary *dict, size_t *len)
+{
+  size_t index = 0;
+  char *str = bencode_dict(dict, NULL, &index);
+  *len = size;
+  return str;
+}
