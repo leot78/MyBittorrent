@@ -5,6 +5,24 @@
 
 #include "my_bittorrent.h"
 
+size_t write_callback(char *ptr, size_t size, size_t nmemb, void *userdata)
+{
+  size_t t_size = size * nmemb;
+  struct data_chunk *chunk = userdata;
+
+  char *tmp = realloc(chunk->data, chunk->size + t_size + 1);
+  if (!tmp)
+  {
+    warn("Could not reallocate data");
+    return 0;
+  }
+  chunk->data = tmp;
+  memcpy(chunk->data + chunk->size, ptr, t_size);
+  chunk->size += t_size;
+  chunk->data[chunk->size] = '\0';
+  return t_size;
+}
+
 size_t get_end_addr(char *urlp)
 {
   size_t i = 0;
@@ -47,18 +65,24 @@ char *get_tracker(char *urlp, char *sha1)
   size_t sep_pos = get_end_addr(urlp);
   CURL *handle = curl_easy_init();
   char *request = prepare_request(urlp + sep_pos, urlp, sha1);
-  char *buff = NULL;
+  struct data_chunk buff;
+  buff.size = 0;
+  buff.data = malloc(sizeof(char));
+  if (!buff.data)
+    err(1, "Could not allocate first buff.data for curl GET");
+
   char errbuff[CURL_ERROR_SIZE];
   curl_easy_setopt(handle, CURLOPT_URL, request);
-  //curl_easy_setopt(handle, CURLOPT_WRITEFUNCTION, write_callback);
+  curl_easy_setopt(handle, CURLOPT_WRITEFUNCTION, write_callback);
   curl_easy_setopt(handle, CURLOPT_WRITEDATA, &buff);
   curl_easy_setopt(handle, CURLOPT_ERRORBUFFER, &errbuff);
   int res = curl_easy_perform(handle);
   curl_easy_cleanup(handle);
   curl_global_cleanup();
+  
   if (res)
     err(res, errbuff);
-  return buff;
+  return buff.data;
 }
 
 

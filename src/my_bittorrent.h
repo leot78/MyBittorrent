@@ -23,6 +23,12 @@ enum options
   SEED = 0x100
 };
 
+struct data_chunk
+{
+  char *data;
+  size_t size;
+};
+
 struct tracker
 {
   struct dictionary *dict;
