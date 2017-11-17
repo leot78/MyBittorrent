@@ -52,9 +52,9 @@ int main(int argc, char **argv)
 
   //printf("url: %s\n", url);
   //
-  unsigned char *hash = get_info_hash(tracker);
+  //unsigned char *hash = get_info_hash(tracker);
   //hash = hash;
-  printf("hash: %s\n", hash);
+  //printf("hash: %s\n", hash);
 
   if (opt & PRINT)
   {
@@ -62,7 +62,8 @@ int main(int argc, char **argv)
   }
   if (opt & PEERS)
   {
-    printf("--dump-peers option selected: not implemented yet\n");
+    dump_peers(tracker);
+    //printf("--dump-peers option selected: not implemented yet\n");
   }
   if (opt & SEED)
   {

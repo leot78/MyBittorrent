@@ -36,3 +36,12 @@ char *concat(char *c1, char *c2)
   strcat(res, c2);
   return res;
 }
+
+char *strcpy_delim(char *dest, char *src, char delim)
+{
+  size_t i = 0;
+  for (; src[i] != delim; i++)
+    dest[i] = src[i];
+  dest[i] = '\0';
+  return dest;
+}

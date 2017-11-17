@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <my_string.h>
 
 #include "my_bittorrent.h"
 
@@ -47,24 +48,29 @@ size_t get_end_addr(char *urlp)
   return url;
 }*/
 
-char *prepare_request(char *port, char *urlp, char *info_hash)
+char *prepare_request(char *port, char *urlp, unsigned char *info_hash,
+                      CURL *handle)
 {
   size_t total_size = strlen(urlp) + REQUEST_LEN;
   char *get_request = malloc(sizeof(char) * total_size);
   if (!get_request)
     err(1, "Could not allocate string request");
   sprintf(get_request,
-          "%s/announce?peer_id=%s&info_hash=%s\n&port=%s&left=0\
+          "?peer_id=%s&info_hash=%s\n&port=%s&left=0\
           &downloaded=0&uploaded=0&compact=1",
-          urlp, compute_peer_id(), info_hash, port);
+          compute_peer_id(), info_hash, port);
+  get_request = curl_easy_escape(handle, get_request, 0);
+  get_request = concat(urlp, get_request);
   return get_request;
 }
 
-char *get_tracker(char *urlp, char *sha1)
+char *get_tracker(char *urlp, unsigned char *sha1)
 {
   size_t sep_pos = get_end_addr(urlp);
   CURL *handle = curl_easy_init();
-  char *request = prepare_request(urlp + sep_pos, urlp, sha1);
+  char *port = malloc(sizeof(char) * 6);
+  port = strcpy_delim(port, urlp + sep_pos, '/');
+  char *request = prepare_request(port, urlp, sha1, handle);
   struct data_chunk buff;
   buff.size = 0;
   buff.data = malloc(sizeof(char));
@@ -84,6 +90,3 @@ char *get_tracker(char *urlp, char *sha1)
     err(res, errbuff);
   return buff.data;
 }
-
-
-
