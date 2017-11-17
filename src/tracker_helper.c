@@ -56,13 +56,13 @@ void delete_tracker(struct tracker *tr)
 unsigned char *compute_sha1(char *info, size_t len)
 {
   unsigned char *md_value = malloc(EVP_MAX_MD_SIZE * sizeof(char));
-  unsigned md_len;
+/*  unsigned md_len;
   const EVP_MD *md = EVP_sha1();
   EVP_MD_CTX *mdctx = EVP_MD_CTX_new();
   EVP_DigestInit_ex(mdctx, md, NULL);
   EVP_DigestUpdate(mdctx, info, len);
   EVP_DigestFinal_ex(mdctx, md_value, &md_len);
-  EVP_MD_CTX_free(mdctx);
+  EVP_MD_CTX_free(mdctx);*/
   return md_value;
 }
 
@@ -84,7 +84,7 @@ unsigned char *get_info_hash(struct tracker *tr)
 
   size_t size = 0;
   size_t index = 0;
-  char *info_encode = bencode_dict(info_dict, NULL, &size, &index);
+  char *info_encode = bencode_dict(info_dict, NULL, &index);
   printf("info encode: ");
   print_string(info_encode, size);
   printf("\n");

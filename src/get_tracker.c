@@ -57,7 +57,7 @@ char *get_tracker(char *urlp, char *sha1)
   curl_easy_cleanup(handle);
   curl_global_cleanup();
   if (res)
-    err(res, errbuff);
+    err(res, "%s", errbuff);
   return buff;
 }
 
