@@ -49,6 +49,6 @@ unsigned char *compute_sha1(char *info, size_t len);
 unsigned char *get_info_hash(struct tracker *tr);
 char *get_tracker(char *urlp, unsigned char *sha1);
 void dump_peers(struct tracker *tracker);
-void print_hash(unsigned char *hash);
+char *get_hash(unsigned char *hash, size_t size);
 
 #endif /*! MY_BITTORRENT_H */
