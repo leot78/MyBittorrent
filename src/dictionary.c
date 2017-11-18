@@ -36,7 +36,7 @@ void add_elt(struct dictionary *d, struct element *elt)
   ++d->size;
 }
 
-struct element *get_value(struct dictionary *d, char *key)
+struct element *get_elt(struct dictionary *d, char *key)
 {
   struct node *cur = d->table->head;
   for (; cur; cur = cur->next)
@@ -45,8 +45,16 @@ struct element *get_value(struct dictionary *d, char *key)
     if (strcmp(key, elt->key) == 0)
       return elt;
   }
-
   return NULL;
+}
+
+void *get_value(struct dictionary *d, char *key, size_t *size)
+{
+  struct element *elt = get_elt(d, key);
+  if (!elt)
+    return NULL;
+  *size = elt->size;
+  return elt->value;
 }
 
 void delete_list(struct list *l)
