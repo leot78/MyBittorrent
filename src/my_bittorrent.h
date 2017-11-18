@@ -48,7 +48,14 @@ void delete_tracker(struct tracker *tr);
 unsigned char *compute_sha1(char *info, size_t len);
 unsigned char *get_info_hash(struct tracker *tr);
 char *get_tracker(char *urlp, unsigned char *sha1);
-void dump_peers(struct tracker *tracker);
+
+void print_peers(struct list *peer_list);
+struct list *get_peers(struct tracker *tracker);
+
 void print_hash(unsigned char *hash);
+
+struct sockaddr_in *create_sock(struct raw_addr *ra);
+struct list *decode_bin(char *binaries);
+void free_sock_list(struct list *l_sa);
 
 #endif /*! MY_BITTORRENT_H */

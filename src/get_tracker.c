@@ -54,16 +54,21 @@ char *prepare_request(char *port, char *urlp, unsigned char *info_hash,
   size_t total_size = strlen(urlp) + REQUEST_LEN;
   char *get_request = malloc(sizeof(char) * total_size);
   char *peer_id = compute_peer_id();
-  peer_id = curl_easy_escape(handle, peer_id, 0);
+  char *tmp = curl_easy_escape(handle, peer_id, 0);
+  free(peer_id);
+  peer_id = tmp;
   if (!get_request)
     err(1, "Could not allocate string request");
   char *url_hash = curl_easy_escape(handle,(char *) info_hash, 20);
   sprintf(get_request,
           "?peer_id=%s&info_hash=%s&port=6881&left=0",
           peer_id, url_hash);
-  get_request = concat(get_request, "&downloaded=0&uploaded=0&compact=1");
-
-  get_request = concat(urlp, get_request);
+  tmp = concat(get_request, "&downloaded=0&uploaded=0&compact=1");
+  free(get_request);
+  get_request = concat(urlp, tmp);
+  free(tmp);
+  free(peer_id);
+  curl_free(url_hash);
   return get_request;
 }
 
@@ -75,6 +80,7 @@ char *get_tracker(char *urlp, unsigned char *sha1)
   port = strcpy_delim(port, urlp + sep_pos, '/');
   //urlp = "http://acu-tracker-1.pie.cri.epita.net:6969";
   char *request = prepare_request(port, urlp, sha1, handle);
+  free(port);
   struct data_chunk buff;
   buff.size = 0;
   buff.data = malloc(sizeof(char));
@@ -90,7 +96,7 @@ char *get_tracker(char *urlp, unsigned char *sha1)
   int res = curl_easy_perform(handle);
   curl_easy_cleanup(handle);
   curl_global_cleanup();
-  
+  free(request); 
   if (res)
     err(res, errbuff);
   return buff.data;

@@ -5,6 +5,7 @@
 
 #include "my_bittorrent.h"
 #include "dictionary.h"
+#include "list/list.h"
 #include "parsing.h"
 #include "print_json.h"
 
@@ -61,14 +62,17 @@ int main(int argc, char **argv)
   //char *url = get_tracker_url(tracker);
 
   //printf("url: %s\n", url);
-  //
+  
+  struct list *peer_list = get_peers(tracker);
   if (opt & PRINT)
   {
     print_json(tracker);
   }
   if (opt & PEERS)
   {
-    dump_peers(tracker);
+    if (peer_list->size == 0)
+      return 1;
+    print_peers(peer_list);
     //printf("--dump-peers option selected: not implemented yet\n");
   }
   if (opt & SEED)
@@ -82,5 +86,6 @@ int main(int argc, char **argv)
 
   //free(hash);
   delete_tracker(tracker);
+  free_sock_list(peer_list);
   return 0;
 }
