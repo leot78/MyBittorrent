@@ -19,8 +19,8 @@ void print_string(const char *s, size_t size)
     {
       if (s[i] < 0x20 || s[i] > 0x7E)
         printf("\\u%04X", s[i]);
-      else if (s[i] == '\"')
-        printf("\\\"");
+      else if (s[i] == '\"' || s[i] == '\\')
+        printf("\\%c", s[i]);
       else
         putchar(s[i]);
       ++i;

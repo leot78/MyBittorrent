@@ -8,41 +8,53 @@
 #include "dictionary.h"
 #include "list/list.h"
 
-size_t my_atoi(char first_c, FILE *file, char end)
+size_t my_atoi(char first_c, char *str, char end, size_t *index)
 {
   size_t res = 0;
 
   char c = first_c;
   res = res * 10 + c - '0';
-  while ((c = fgetc(file)) != end)
+  *index += 1;
+  while ((c = str[*index]) != end)
+  {
     res = (res * 10) + c - '0';
+    *index += 1;
+  }
+  *index += 1;
 
   return res;
 }
 
-char *parse_string(char first_c, FILE *file, size_t *size)
+char *parse_string(char first_c, char *str, size_t *size, size_t *index)
 {
-  size_t len = my_atoi(first_c, file, ':');
+  size_t len = my_atoi(first_c, str, ':', index);
   char *out = malloc(sizeof(char) * len + 1);
-  for (size_t i = 0; i < len; ++i)
-   out[i] = fgetc(file);
-
+  memcpy(out, str + *index, len);
+  *index += len - 1;
   out[len] = 0;
   if (size)
     *size = len;
   return out;
 }
 
-char *parse_number(FILE *file)
+char *parse_number(char *str, size_t *index)
 {
-  char *res = NULL;
-  size_t n = 0;
-  ssize_t len = getdelim(&res, &n, 'e', file);
-  res[len - 1] = 0;
+  *index += 1;
+  size_t i = *index;
+  size_t len = 0;
+  while (str[i] != 'e')
+  {
+    ++len;
+    ++i;
+  }
+  char *res = malloc(len + 1);;
+  memcpy(res, str + *index, len);
+  res[len] = 0;
+  *index += len;
   return res;
 }
 
-struct element *get_elt(char c, char *key, FILE *file)
+struct element *get_elt(char c, char *key, char *str, size_t *index)
 {
   void *value = NULL;
   enum type t = CHAR;
@@ -50,62 +62,86 @@ struct element *get_elt(char c, char *key, FILE *file)
   if (c == 'i')
   {
     t = NUMBER;
-    value = parse_number(file);
+    value = parse_number(str, index);
   }
   else if (c == 'd')
   {
     t = DICT;
-    value = parse_dict(file);
+    value = parse_dict(str, index);
   }
   else if (c == 'l')
   {
     t = LIST;
-    value = parse_list(file);
+    value = parse_list(str, index);
   }
   else
-    value = parse_string(c, file, &size);
+    value = parse_string(c, str, &size, index);
 
   return create_elt(key, value, t, size);
 }
 
-struct dictionary *parse_dict(FILE *file)
+struct dictionary *parse_dict(char *str, size_t *index)
 {
   struct dictionary *dict = create_dict();
   char c = 0;
-  while ((c = fgetc(file)) != 'e')
+  *index += 1;
+  while ((c = str[*index]) != 'e')
   {
-    char *key = parse_string(c, file, NULL);
-    c = fgetc(file);
-    struct element *elt = get_elt(c, key, file);
+    char *key = parse_string(c, str, NULL, index);
+    *index += 1;
+    c = str[*index];
+    struct element *elt = get_elt(c, key, str, index);
     add_elt(dict, elt);
+    *index += 1;
   }
   return dict;
 }
 
-struct list *parse_list(FILE *file)
+struct list *parse_list(char *str, size_t *index)
 {
   struct list *l = init_list();
   char c = 0;
-  while ((c = fgetc(file)) != 'e')
+  *index += 1;
+  while ((c = str[*index]) != 'e')
   {
-    struct element *elt = get_elt(c, NULL, file);
+    struct element *elt = get_elt(c, NULL, str, index);
     add_tail(l, elt);
+    *index += 1;
   }
 
   return l;
+}
+
+struct tracker *parse_content(char *content)
+{
+  struct tracker *tr = malloc(sizeof(struct tracker));
+
+  size_t index = 0;
+  tr->dict = parse_dict(content, &index);
+
+  return tr;
 }
 
 struct tracker *parse_file(const char *path)
 {
   FILE *file = fopen(path, "r");
   if (!file)
-    return NULL;
+    err(1, "cannot open file : %s", path);
 
-  struct tracker *tr = malloc(sizeof(struct tracker));
+  fseek(file, 0, SEEK_END);
 
-  fgetc(file);
-  tr->dict = parse_dict(file);
+  size_t size_file = ftell(file);
 
+  char *content = malloc(size_file + 1);
+  if (!content)
+    err(1, "cannot malloc in parse_file");
+
+  rewind(file);
+  fread(content, 1, size_file, file);
+  content[size_file] = 0;
   fclose(file);
+
+  struct tracker *tr = parse_content(content);
+  free(content);
   return tr;
 }
