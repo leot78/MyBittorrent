@@ -48,7 +48,7 @@ size_t get_end_addr(char *urlp)
   return url;
 }*/
 
-char *prepare_request(char *port, char *urlp, char *info_hash,
+char *prepare_request(char *port, char *urlp, unsigned char *info_hash,
                       CURL *handle)
 {
   size_t total_size = strlen(urlp) + REQUEST_LEN;
@@ -57,17 +57,17 @@ char *prepare_request(char *port, char *urlp, char *info_hash,
   peer_id = curl_easy_escape(handle, peer_id, 0);
   if (!get_request)
     err(1, "Could not allocate string request");
-  info_hash = curl_easy_escape(handle, info_hash, 0);
+  char *url_hash = curl_easy_escape(handle,(char *) info_hash, 20);
   sprintf(get_request,
           "?peer_id=%s&info_hash=%s&port=6881&left=0",
-          peer_id, info_hash);
+          peer_id, url_hash);
   get_request = concat(get_request, "&downloaded=0&uploaded=0&compact=1");
 
   get_request = concat(urlp, get_request);
   return get_request;
 }
 
-char *get_tracker(char *urlp, char *sha1)
+char *get_tracker(char *urlp, unsigned char *sha1)
 {
   size_t sep_pos = get_end_addr(urlp);
   CURL *handle = curl_easy_init();
