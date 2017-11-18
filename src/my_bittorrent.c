@@ -36,7 +36,7 @@ enum options parse_options(int argc, char **argv, int *index)
 char *get_hash(unsigned char *hash, size_t size)
 {
   char *res = malloc(size * 2 + 1);
-  for (int i = 0; i < size; ++i)
+  for (size_t i = 0; i < size; ++i)
   {
     sprintf(res + (i * 2), "%02x", hash[i]);
   }

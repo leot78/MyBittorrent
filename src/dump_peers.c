@@ -8,6 +8,7 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 
+#include "dictionary.h"
 #include "list/list.h"
 #include "my_bittorrent.h"
 #include "parsing.h"

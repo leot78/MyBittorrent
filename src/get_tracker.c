@@ -49,7 +49,7 @@ size_t get_end_addr(char *urlp)
   return url;
 }*/
 
-char *prepare_request(char *port, char *urlp, unsigned char *info_hash,
+char *prepare_request(char *urlp, unsigned char *info_hash,
                       CURL *handle)
 {
   size_t total_size = strlen(urlp) + REQUEST_LEN;
@@ -84,7 +84,7 @@ char *get_tracker(char *urlp, unsigned char *sha1)
   char *port = malloc(sizeof(char) * 6);
   port = strcpy_delim(port, urlp + sep_pos, '/');
   //urlp = "http://acu-tracker-1.pie.cri.epita.net:6969";
-  char *request = prepare_request(port, urlp, sha1, handle);
+  char *request = prepare_request(urlp, sha1, handle);
   free(port);
   struct data_chunk buff;
   buff.size = 0;
