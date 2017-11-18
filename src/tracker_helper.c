@@ -34,15 +34,7 @@ char *compute_peer_id(void)
 
 char *get_tracker_url(struct tracker *tracker)
 {
-  struct dictionary *dict = tracker->dict;
-  struct node *cur = dict->table->head;
-  for (; cur; cur = cur->next)
-  {
-    struct element *elt = cur->data;
-    if (strcmp(elt->key, "announce") == 0)
-      return elt->value;
-  }
-  return NULL;
+  return get_value(tracker->dict, "announce");
 }
 
 void delete_tracker(struct tracker *tr)
@@ -66,14 +58,7 @@ unsigned char *compute_sha1(char *info, size_t len)
 
 struct dictionary *get_info_dict(struct dictionary *d)
 {
-  struct node *cur = d->table->head;
-  for (; cur; cur = cur->next)
-  {
-    struct element *elt = cur->data;
-    if (strcmp(elt->key, "info") == 0)
-      return elt->value;
-  }
-  return NULL;
+  return get_value(d, "info");
 }
 
 unsigned char *get_info_hash(struct tracker *tr)

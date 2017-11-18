@@ -48,12 +48,11 @@ struct element *get_elt(struct dictionary *d, char *key)
   return NULL;
 }
 
-void *get_value(struct dictionary *d, char *key, size_t *size)
+void *get_value(struct dictionary *d, char *key)
 {
   struct element *elt = get_elt(d, key);
   if (!elt)
     return NULL;
-  *size = elt->size;
   return elt->value;
 }
 
