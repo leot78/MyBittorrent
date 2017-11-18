@@ -92,7 +92,7 @@ char *get_tracker(char *urlp, unsigned char *sha1)
   curl_easy_setopt(handle, CURLOPT_WRITEFUNCTION, write_callback);
   curl_easy_setopt(handle, CURLOPT_WRITEDATA, &buff);
   curl_easy_setopt(handle, CURLOPT_ERRORBUFFER, &errbuff);                                                                                                       
-  curl_easy_setopt(handle, CURLOPT_VERBOSE, 1L);
+  //curl_easy_setopt(handle, CURLOPT_VERBOSE, 1L);
   int res = curl_easy_perform(handle);
   curl_easy_cleanup(handle);
   curl_global_cleanup();

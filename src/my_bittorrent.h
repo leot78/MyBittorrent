@@ -47,6 +47,7 @@ char *get_tracker_url(struct tracker *tracker);
 void delete_tracker(struct tracker *tr);
 unsigned char *compute_sha1(char *info, size_t len);
 unsigned char *get_info_hash(struct tracker *tr);
+
 char *get_tracker(char *urlp, unsigned char *sha1);
 
 void print_peers(struct list *peer_list);
