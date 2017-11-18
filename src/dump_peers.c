@@ -11,6 +11,7 @@
 #include "list/list.h"
 #include "my_bittorrent.h"
 #include "parsing.h"
+#include "print_log.h"
 
 void print_peers(struct list *peer_list)
 {
@@ -33,6 +34,7 @@ void print_peers(struct list *peer_list)
 struct list *get_peers(struct tracker *tracker)
 {
   unsigned char *hash = get_info_hash(tracker);
+  set_torrent_id(get_hash(hash, 3));
   char *urlp = get_tracker_url(tracker);
   char *tracker_response = get_tracker(urlp, hash);
   free(hash);
