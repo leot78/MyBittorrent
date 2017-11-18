@@ -42,20 +42,17 @@ struct peer *create_sock(struct raw_addr *ra, int nb_pieces)
   struct peer *peer = init_peer(nb_pieces, sa);
   if (!peer)
     err(1, "Could not allocate peer struct");
-  peer
-  return sa;
+  return peer;
 }
 
 struct list *decode_bin(char *binaries, int nb_pieces)
 {
   struct tracker *tr = parse_content(binaries);
-  struct element *elt = get_value(tr->dict, "peers");
-  char *start = elt->value;
-  void *tmp = start;
+  size_t size = 0;
+  struct raw_addr *ra = get_value(tr->dict, "peers", &size);
   //get raw address
-  struct raw_addr *ra = tmp;
   struct list *peer_list = init_list();
-  for (unsigned i = 0; i < elt->size; i+=6, ra++)
+  for (unsigned i = 0; i < size; i+=6, ra++)
     add_front(peer_list, create_sock(ra, nb_pieces));
   delete_tracker(tr);
   free(binaries);
@@ -66,7 +63,7 @@ void free_sock_list(struct list *l_sa)
 {
   while (l_sa->size)
   {
-    struct node *peer = pop_front(l_sa);
+    struct peer *peer = pop_front(l_sa);
     free(peer->sa);
     free(peer->have);
     free(peer);

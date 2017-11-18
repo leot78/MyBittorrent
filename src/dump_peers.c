@@ -23,7 +23,9 @@ void print_peers(struct list *peer_list)
     char host[1024];
     char service[20];
     //get hostname
-    getnameinfo((struct sockaddr*)it->data, sizeof(struct sockaddr), host,
+    struct peer *peer = it->data;
+
+    getnameinfo((struct sockaddr*)peer->sa, sizeof(struct sockaddr), host,
               sizeof(host), service, sizeof(service), 0);
     //char str[INET_ADDRSTRLEN];
     //get pretty print
@@ -37,9 +39,9 @@ struct list *get_peers(struct tracker *tracker)
   unsigned char *hash = get_info_hash(tracker);
   set_torrent_id(get_hash(hash, 3));
   char *urlp = get_tracker_url(tracker);
-  struct dictionary *dict = get_value(tracker->dict, "info");
-  int file_len = atoi(get_value(dict, "length"));
-  int piece_len = atoi(get_value(dict, "piece length"));
+  struct dictionary *dict = get_value(tracker->dict, "info", NULL);
+  int file_len = atoi(get_value(dict, "length", NULL));
+  int piece_len = atoi(get_value(dict, "piece length", NULL));
   char *tracker_response = get_tracker(urlp, hash);
   free(hash);
   return decode_bin(tracker_response, file_len / piece_len);

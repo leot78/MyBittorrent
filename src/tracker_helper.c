@@ -34,7 +34,7 @@ char *compute_peer_id(void)
 
 char *get_tracker_url(struct tracker *tracker)
 {
-  return get_value(tracker->dict, "announce");
+  return get_value(tracker->dict, "announce", NULL);
 }
 
 void delete_tracker(struct tracker *tr)
@@ -58,7 +58,7 @@ unsigned char *compute_sha1(char *info, size_t len)
 
 struct dictionary *get_info_dict(struct dictionary *d)
 {
-  return get_value(d, "info");
+  return get_value(d, "info", NULL);
 }
 
 unsigned char *get_info_hash(struct tracker *tr)

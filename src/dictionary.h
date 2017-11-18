@@ -25,7 +25,7 @@ struct dictionary
 
 struct dictionary *create_dict(void);
 void add_elt(struct dictionary *d, struct element *elt);
-void *get_value(struct dictionary *d, char *key);
+void *get_value(struct dictionary *d, char *key, size_t *size);
 void delete_dict(struct dictionary *d);
 struct element *create_elt(char *key, void *value, enum type t, size_t size);
 
