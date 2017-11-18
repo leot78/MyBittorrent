@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include <err.h>
 
 #include "print_log.h"
 
@@ -12,7 +13,7 @@ void init_log(int active)
     err(1, "cannot malloc struct log_info");
 
   logs->torrent_id = NULL;
-  logs->log_activate = active;
+  logs->log_active = active;
 }
 
 void set_torrent_id(char *hash_str)
@@ -22,7 +23,7 @@ void set_torrent_id(char *hash_str)
 
 void print_log(char *action, char *msg)
 {
-  if (!logs->log_activate)
+  if (!logs->log_active)
     return;
 
   printf("%s: %s: %s\n", logs->torrent_id, action, msg);
