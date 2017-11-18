@@ -59,34 +59,29 @@ int main(int argc, char **argv)
     return 0;
   }
 
-  init_log(opt & VERBOSE);
-
   char *filepath = argv[index];
-
   struct tracker *tracker = parse_file(filepath);
-
-  //char *url = get_tracker_url(tracker);
-
-  //printf("url: %s\n", url);
-  
-  struct list *peer_list = get_peers(tracker);
   if (opt & PRINT)
   {
     print_json(tracker);
+    delete_tracker(tracker);
+    return 0;
   }
+  
+  init_log(opt & VERBOSE);
+  struct list *peer_list = get_peers(tracker);
+  
   if (opt & PEERS)
   {
     if (peer_list->size == 0)
       return 1;
     print_peers(peer_list);
-    //printf("--dump-peers option selected: not implemented yet\n");
   }
   if (opt & SEED)
   {
     printf("--seed option selected: not implemented yet\n");
   }
 
-  //free(hash);
   delete_tracker(tracker);
   free_sock_list(peer_list);
   delete_log_info();
