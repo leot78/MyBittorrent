@@ -27,8 +27,8 @@ void print_peers(struct list *peer_list)
   struct node *it = peer_list->head;
   for (; it; it = it->next)
   {
-    char host[1024];
-    char service[20];
+    char host[HOST_LEN];
+    char service[SERVICE_LEN];
     //get hostname
     struct peer *peer = it->data;
 
