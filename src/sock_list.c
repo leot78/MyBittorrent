@@ -29,7 +29,6 @@ struct list *decode_bin(char *binaries)
 {
   struct tracker *tr = parse_content(binaries);
   struct element *elt = get_value(tr->dict, "peers");
-  delete_tracker(tr);
   char *start = elt->value;
   void *tmp = start;
   //get raw address
@@ -37,6 +36,7 @@ struct list *decode_bin(char *binaries)
   struct list *peer_list = init_list();
   for (unsigned i = 0; i < elt->size; i+=6, ra++)
     add_front(peer_list, create_sock(ra));
+  delete_tracker(tr);
   free(binaries);
   return peer_list;
 }
