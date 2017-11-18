@@ -24,7 +24,6 @@ char *compute_peer_id(void)
   long diff = PEER_ID_MAXVALUE - PEER_ID_MINVALUE;
   double factor = diff / RAND_MAX;
   long twelve_dig = r * factor + PEER_ID_MINVALUE;
-  printf("rand = %ld\n", twelve_dig);
 
   char *pre_peer = PEER_ID_PREFIX;
   char *post_peer = my_itoa(twelve_dig);

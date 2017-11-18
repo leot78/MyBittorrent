@@ -2,9 +2,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <my_string.h>
 
 #include "my_bittorrent.h"
+#include "my_string.h"
+#include "print_log.h"
 
 size_t write_callback(char *ptr, size_t size, size_t nmemb, void *userdata)
 {
@@ -74,6 +75,10 @@ char *prepare_request(char *port, char *urlp, unsigned char *info_hash,
 
 char *get_tracker(char *urlp, unsigned char *sha1)
 {
+  char *msg = concat("requesting peers to ", urlp);
+  print_log("tracker", msg);
+  free(msg);
+
   size_t sep_pos = get_end_addr(urlp);
   CURL *handle = curl_easy_init();
   char *port = malloc(sizeof(char) * 6);
