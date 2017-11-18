@@ -32,13 +32,15 @@ enum options parse_options(int argc, char **argv, int *index)
   return opt;
 }
 
-void print_hash(unsigned char *hash)
+char *get_hash(unsigned char *hash, size_t size)
 {
-  for (int i = 0; i < 20; ++i)
+  char *res = malloc(size * 2 + 1);
+  for (int i = 0; i < size; ++i)
   {
-    printf("%02x", hash[i]);
+    sprintf(res + (i * 2), "%02x", hash[i]);
   }
-  printf("\n");
+  res[size * 2] = 0;
+  return res;
 }
 
 int main(int argc, char **argv)

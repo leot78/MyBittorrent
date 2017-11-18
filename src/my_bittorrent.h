@@ -52,7 +52,8 @@ char *get_tracker(char *urlp, unsigned char *sha1);
 void print_peers(struct list *peer_list);
 struct list *get_peers(struct tracker *tracker);
 
-void print_hash(unsigned char *hash);
+void dump_peers(struct tracker *tracker);
+char *get_hash(unsigned char *hash, size_t size);
 
 struct sockaddr_in *create_sock(struct raw_addr *ra);
 struct list *decode_bin(char *binaries);
