@@ -11,6 +11,7 @@
 
 #include <err.h>
 #include <stddef.h>
+#include <stdint.h>
 
 #include "dictionary.h"
 
@@ -35,11 +36,12 @@ struct tracker
   char *info;
 };
 
-/*struct raw_addr
+struct raw_addr
 {
-  uint32 ip;
-  uint16 
-*/
+  uint32_t ip;
+  uint16_t port;
+} __attribute__ ((packed));
+
 char *compute_peer_id(void);
 char *get_tracker_url(struct tracker *tracker);
 void delete_tracker(struct tracker *tr);
