@@ -8,6 +8,7 @@
 #include "list/list.h"
 #include "parsing.h"
 #include "print_json.h"
+#include "print_log.h"
 
 enum options parse_options(int argc, char **argv, int *index)
 {
@@ -57,6 +58,9 @@ int main(int argc, char **argv)
     printf("Usage : %s [options] [files]\n", argv[0]);
     return 0;
   }
+
+  init_log(opt & VERBOSE);
+
   char *filepath = argv[index];
 
   struct tracker *tracker = parse_file(filepath);
@@ -81,13 +85,10 @@ int main(int argc, char **argv)
   {
     printf("--seed option selected: not implemented yet\n");
   }
-  if (opt & VERBOSE)
-  {
-    printf("--verbose option selected: not implemented yet\n");
-  }
 
   //free(hash);
   delete_tracker(tracker);
   free_sock_list(peer_list);
+  delete_log_info();
   return 0;
 }

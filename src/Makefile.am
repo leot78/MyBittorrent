@@ -19,4 +19,6 @@ my_bittorrent_SOURCES = dictionary.c \
 												encode.c \
 												encode.h \
 												dump_peers.c \
-												sock_list.c
+												sock_list.c \
+												print_log.c \
+												print_log.h
