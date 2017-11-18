@@ -11,7 +11,24 @@
 #include "my_bittorrent.h"
 #include "parsing.h"
 
-struct sockaddr_in *create_sock(struct raw_addr *ra)
+struct peer *init_peer(int nb_pieces, struct sockaddr_in *sa)
+{
+  struct peer *peer = malloc(sizeof(struct peer));
+  if (!peer)
+    err(1, "Could not allocate peer struct");
+  peer->sa = sa;
+  int *have = malloc(sizeof(int) * nb_pieces);
+  if (!have)
+    err(1, "Could not allocate have array");
+  peer->have = have;
+  peer->interested = 0;
+  peer->choked = 0;
+  peer->index_socket = -1;
+  peer->nb_pieces = nb_pieces;
+  return peer;
+}
+
+struct peer *create_sock(struct raw_addr *ra, int nb_pieces)
 {
   struct in_addr addr;
   addr.s_addr = ra->ip;
@@ -22,10 +39,14 @@ struct sockaddr_in *create_sock(struct raw_addr *ra)
   sa->sin_family = AF_INET;
   sa->sin_port = ra->port;
   sa->sin_addr = addr;
+  struct peer *peer = init_peer(nb_pieces, sa);
+  if (!peer)
+    err(1, "Could not allocate peer struct");
+  peer
   return sa;
 }
 
-struct list *decode_bin(char *binaries)
+struct list *decode_bin(char *binaries, int nb_pieces)
 {
   struct tracker *tr = parse_content(binaries);
   struct element *elt = get_value(tr->dict, "peers");
@@ -35,7 +56,7 @@ struct list *decode_bin(char *binaries)
   struct raw_addr *ra = tmp;
   struct list *peer_list = init_list();
   for (unsigned i = 0; i < elt->size; i+=6, ra++)
-    add_front(peer_list, create_sock(ra));
+    add_front(peer_list, create_sock(ra, nb_pieces));
   delete_tracker(tr);
   free(binaries);
   return peer_list;
@@ -44,6 +65,11 @@ struct list *decode_bin(char *binaries)
 void free_sock_list(struct list *l_sa)
 {
   while (l_sa->size)
-   free(pop_front(l_sa));
+  {
+    struct node *peer = pop_front(l_sa);
+    free(peer->sa);
+    free(peer->have);
+    free(peer);
+  }
   free(l_sa);
 }

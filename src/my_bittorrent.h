@@ -42,6 +42,16 @@ struct raw_addr
   uint16_t port;
 } __attribute__ ((packed));
 
+struct peer
+{
+  struct sockaddr_in *sa;
+  int *have;
+  int nb_pieces;
+  int interested;
+  int choked;
+  int index_socket;
+};
+
 char *compute_peer_id(void);
 char *get_tracker_url(struct tracker *tracker);
 void delete_tracker(struct tracker *tr);
@@ -56,8 +66,8 @@ struct list *get_peers(struct tracker *tracker);
 void dump_peers(struct tracker *tracker);
 char *get_hash(unsigned char *hash, size_t size);
 
-struct sockaddr_in *create_sock(struct raw_addr *ra);
-struct list *decode_bin(char *binaries);
+struct peer *create_sock(struct raw_addr *ra, int nb_pieces);
+struct list *decode_bin(char *binaries, int nb_pieces);
 void free_sock_list(struct list *l_sa);
 
 #endif /*! MY_BITTORRENT_H */

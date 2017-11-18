@@ -36,8 +36,11 @@ struct list *get_peers(struct tracker *tracker)
   unsigned char *hash = get_info_hash(tracker);
   set_torrent_id(get_hash(hash, 3));
   char *urlp = get_tracker_url(tracker);
+  struct dictionary *dict = get_value(tracker->dict, "info");
+  int file_len = atoi(get_value(dict, "length"));
+  int piece_len = atoi(get_value(dict, "piece length"));
   char *tracker_response = get_tracker(urlp, hash);
   free(hash);
-  return decode_bin(tracker_response);
+  return decode_bin(tracker_response, file_len / piece_len);
   //printf("raw tracker response :\n%s", tracker_response);
 }
