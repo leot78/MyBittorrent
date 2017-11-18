@@ -14,6 +14,13 @@
 #include "parsing.h"
 #include "print_log.h"
 
+void get_peers_url(struct sockaddr_in *sa, char *host, char *service)
+{
+  getnameinfo((struct sockaddr*)sa, sizeof(struct sockaddr), host,
+              HOST_LEN, service, SERVICE_LEN, 0);
+}
+
+
 void print_peers(struct list *peer_list)
 {
   //struct sockaddr_in *sa;
@@ -25,8 +32,9 @@ void print_peers(struct list *peer_list)
     //get hostname
     struct peer *peer = it->data;
 
-    getnameinfo((struct sockaddr*)peer->sa, sizeof(struct sockaddr), host,
-              sizeof(host), service, sizeof(service), 0);
+    //getnameinfo((struct sockaddr*)peer->sa, sizeof(struct sockaddr), host,
+      //        sizeof(host), service, sizeof(service), 0);
+    get_peers_url(peer->sa, host, service);
     //char str[INET_ADDRSTRLEN];
     //get pretty print
     //inet_ntop(AF_INET, &(sa.sin_addr), str, INET_ADDRSTRLEN);

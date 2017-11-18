@@ -7,6 +7,9 @@
 #define PEER_ID_MINVALUE 100000000000
 #define PEER_ID_MAXVALUE 999999999999
 
+#define HOST_LEN 1024
+#define SERVICE_LEN 20
+
 #define REQUEST_LEN 124
 
 #include <err.h>
@@ -60,6 +63,7 @@ unsigned char *get_info_hash(struct tracker *tr);
 
 char *get_tracker(char *urlp, unsigned char *sha1);
 
+void get_peers_url(struct sockaddr_in *sa, char *host, char *port);
 void print_peers(struct list *peer_list);
 struct list *get_peers(struct tracker *tracker);
 
