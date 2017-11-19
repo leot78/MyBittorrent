@@ -26,14 +26,7 @@ void print_peers_connect_log(struct peer *p, char *action)
   if (!log_is_active())
     return;
 
-  char host[HOST_LEN];
-  char service[SERVICE_LEN];
-  get_peers_url(p->sa, host, service);
-  char *tmp = concat(host, ":");
-  char *url = concat(tmp, service);
-  free(tmp);
-  char *msg = concat(action, url);
-  free(url);
+  char *msg = concat(action, p->url);
   print_log("peers", msg);
   free(msg);
 }

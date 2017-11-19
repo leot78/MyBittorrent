@@ -10,6 +10,7 @@
 #include "list/list.h"
 #include "my_bittorrent.h"
 #include "parsing.h"
+#include "my_string.h"
 
 struct peer *init_peer(int nb_pieces, struct sockaddr_in *sa)
 {
