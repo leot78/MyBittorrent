@@ -8,6 +8,7 @@ struct log_info
 };
 
 void print_log(char *action, char *msg);
+int log_is_active(void);
 void set_torrent_id(char *hash_str);
 void init_log(int active);
 void delete_log_info(void);
