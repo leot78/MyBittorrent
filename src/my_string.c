@@ -37,6 +37,16 @@ char *concat(char *c1, char *c2)
   return res;
 }
 
+char *concatn(char *c1, char *c2, size_t l1, size_t l2)
+{
+  char *res = malloc((l1 + l2) * sizeof(char));
+  if (!res)
+    return NULL;
+  memcpy(res, c1, l1);
+  memcpy(res + l1, c2, l2);
+  return res;
+}
+
 char *strcpy_delim(char *dest, char *src, char delim)
 {
   size_t i = 0;

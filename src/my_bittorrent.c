@@ -81,7 +81,6 @@ int main(int argc, char **argv)
   {
     printf("--seed option selected: not implemented yet\n");
   }
-
   delete_tracker(tracker);
   free_sock_list(peer_list);
   delete_log_info();

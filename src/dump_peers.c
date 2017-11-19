@@ -23,21 +23,13 @@ void get_peers_url(struct sockaddr_in *sa, char *host, char *service)
 
 void print_peers(struct list *peer_list)
 {
-  //struct sockaddr_in *sa;
   struct node *it = peer_list->head;
   for (; it; it = it->next)
   {
     char host[HOST_LEN];
     char service[SERVICE_LEN];
-    //get hostname
     struct peer *peer = it->data;
-
-    //getnameinfo((struct sockaddr*)peer->sa, sizeof(struct sockaddr), host,
-      //        sizeof(host), service, sizeof(service), 0);
     get_peers_url(peer->sa, host, service);
-    //char str[INET_ADDRSTRLEN];
-    //get pretty print
-    //inet_ntop(AF_INET, &(sa.sin_addr), str, INET_ADDRSTRLEN);
     printf("%s:%s\n", host, service);
   }
 }

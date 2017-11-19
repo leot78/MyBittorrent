@@ -53,6 +53,7 @@ struct peer
   int interested;
   int choked;
   int index_socket;
+  char *url;
 };
 
 char *compute_peer_id(void);
