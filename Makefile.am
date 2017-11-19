@@ -11,6 +11,7 @@ my_bittorrent_SOURCES = src/dictionary.c \
 												src/list/list.h \
 												src/list/list.c \
 												src/list/op_list.c \
+												src/list/op_list2.c \
 												src/print_json.c \
 												src/print_json.h \
 												src/get_tracker.c \
@@ -21,4 +22,5 @@ my_bittorrent_SOURCES = src/dictionary.c \
 												src/print_log.c \
 												src/print_log.h \
 												src/my_string.h \
-												src/connect_peers.c
+												src/connect_peers.c \
+												src/connect_peers.h

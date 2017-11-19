@@ -16,6 +16,11 @@ void init_log(int active)
   logs->log_active = active;
 }
 
+int log_is_active(void)
+{
+  return logs->log_active;
+}
+
 void set_torrent_id(char *hash_str)
 {
   logs->torrent_id = hash_str;

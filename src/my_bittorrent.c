@@ -9,6 +9,7 @@
 #include "parsing.h"
 #include "print_json.h"
 #include "print_log.h"
+#include "connect_peers.h"
 
 enum options parse_options(int argc, char **argv, int *index)
 {
@@ -70,6 +71,10 @@ int main(int argc, char **argv)
   
   init_log(opt & VERBOSE);
   struct list *peer_list = get_peers(tracker);
+
+  int arr_sock[50];
+  int epoll_fd =   create_epoll(peer_list, arr_sock);
+  handle_epoll_event(epoll_fd, arr_sock, peer_list);
   
   if (opt & PEERS)
   {
