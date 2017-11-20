@@ -81,9 +81,8 @@ int main(int argc, char **argv)
     return 0;
   }
   
-  int arr_sock[50];
-  int epoll_fd =   create_epoll(peer_list, arr_sock);
-  handle_epoll_event(epoll_fd, arr_sock, peer_list);
+  int epoll_fd = create_epoll(peer_list);
+  handle_epoll_event(epoll_fd, peer_list);
 
   if (opt & SEED)
   {

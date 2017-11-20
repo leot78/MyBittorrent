@@ -52,7 +52,7 @@ struct peer
   int nb_pieces;
   int interested;
   int choked;
-  int index_socket;
+  int socket;
   char *url;
 };
 
