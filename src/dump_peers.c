@@ -11,6 +11,7 @@
 #include "dictionary.h"
 #include "list/list.h"
 #include "my_bittorrent.h"
+#include "my_string.h"
 #include "parsing.h"
 #include "print_log.h"
 
@@ -20,19 +21,31 @@ void get_peers_url(struct sockaddr_in *sa, char *host, char *service)
               HOST_LEN, service, SERVICE_LEN, 0);
 }
 
+void set_peers_url(struct peer *peer)
+{
+  char host[HOST_LEN];
+  char service[SERVICE_LEN];
+  get_peers_url(peer->sa, host, service);
+  char *tmp = concat(host, ":");
+  char *url = concat(tmp, service);
+  peer->url = url;
+  free(tmp);
+}
 
 void print_peers(struct list *peer_list)
 {
   struct node *it = peer_list->head;
   for (; it; it = it->next)
   {
-    char host[HOST_LEN];
+    /*char host[HOST_LEN];
     char service[SERVICE_LEN];
     struct peer *peer = it->data;
     get_peers_url(peer->sa, host, service);
     peer->service = service;
-    peer->host = host;
-    printf("%s:%s\n", host, service);
+    peer->host = host;*/
+    struct peer *peer = it->data;
+    set_peers_url(peer);
+    printf("%s\n", peer->url);
   }
 }
 

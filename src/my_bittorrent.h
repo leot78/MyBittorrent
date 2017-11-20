@@ -65,6 +65,7 @@ unsigned char *get_info_hash(struct tracker *tr);
 char *get_tracker(char *urlp, unsigned char *sha1);
 
 void get_peers_url(struct sockaddr_in *sa, char *host, char *port);
+void set_peers_url(struct peer *peer);
 void print_peers(struct list *peer_list);
 struct list *get_peers(struct tracker *tracker);
 

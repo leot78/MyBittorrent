@@ -26,7 +26,7 @@ void *pop_elt(struct list *l, void *elt)
 
   for (struct node *cur = l->head; cur; cur = cur->next)
   {
-    if (cur->data = elt)
+    if (cur->data == elt)
     {
       prev->next = cur->next;
       void *res = cur->data;
