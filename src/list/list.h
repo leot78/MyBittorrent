@@ -22,5 +22,6 @@ void *pop_tail(struct list *l);
 void *pop_front(struct list *l);
 void *pop_at(struct list *l, int index);
 void *get_elt_at(struct list *l, size_t index);
+void *pop_elt(struct list *l, void *elt);
 
 #endif /* LIST_H */

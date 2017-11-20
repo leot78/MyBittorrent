@@ -26,13 +26,7 @@ struct peer *init_peer(int nb_pieces, struct sockaddr_in *sa)
   peer->choked = 0;
   peer->index_socket = -1;
   peer->nb_pieces = nb_pieces;
-  char host[HOST_LEN];
-  char service[SERVICE_LEN];
-  get_peers_url(sa, host, service);
-  char *tmp = concat(host, ":");
-  char *url = concat(tmp, service);
-  peer->url = url;
-  free(tmp);
+  peer->url = NULL;
   return peer;
 }
 

@@ -26,6 +26,16 @@ void print_peers_connect_log(struct peer *p, char *action)
   if (!log_is_active())
     return;
 
+  if (!p->url)
+  {
+    char host[HOST_LEN];
+    char service[SERVICE_LEN];
+    get_peers_url(p->sa, host, service);
+    char *tmp = concat(host, ":");
+    char *url = concat(tmp, service);
+    p->url = url;
+    free(tmp);
+  }
   char *msg = concat(action, p->url);
   print_log("peers", msg);
   free(msg);
@@ -75,6 +85,12 @@ int get_socket_index(int *arr_sock, int sock)
   return -1;
 }
 
+struct peer *get_peer_from_sock(struct list *l_peer, int *arr_sock, int sock)
+{
+  int sock_index = get_socket_index(arr_sock, sock);
+  return get_elt_at(l_peer, sock_index);
+}
+
 void handle_epoll_event(int epoll_fd, int *arr_sock, struct list *l_peer)
 {
   struct epoll_event *events = malloc(sizeof(struct epoll_event) * 50);
@@ -87,23 +103,21 @@ void handle_epoll_event(int epoll_fd, int *arr_sock, struct list *l_peer)
     printf("ndfs : %d\n", ndfs);
     for (int i = 0; i < ndfs; i++)
     {
+      struct peer *p = get_peer_from_sock(l_peer, arr_sock, events[i].data.fd);
       if (events[i].events & EPOLLHUP)
       {
-        int sock_index = get_socket_index(arr_sock, events[i].data.fd);
-        struct peer *p = get_elt_at(l_peer, sock_index);
+        close(events[i].data.fd);
+        pop_elt(l_peer, p);
         print_peers_connect_log(p, "disconnect: ");
+        epoll_ctl(epoll_fd, EPOLL_CTL_DEL, events[i].data.fd, events + i);
       }
       else if (events[i].events & EPOLLIN)
       {
-        int sock_index = get_socket_index(arr_sock, events[i].data.fd);
-        struct peer *p = get_elt_at(l_peer, sock_index);
-        print_peers_connect_log(p, "recv: ");
+  //      print_peers_connect_log(p, "recv: ");
       }
       else if (events[i].events & EPOLLOUT)
       {
-        int sock_index = get_socket_index(arr_sock, events[i].data.fd);
-        struct peer *p = get_elt_at(l_peer, sock_index);
-        print_peers_connect_log(p, "send: ");
+//        print_peers_connect_log(p, "send: ");
       }
     }
   }
