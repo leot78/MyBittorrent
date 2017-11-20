@@ -30,6 +30,8 @@ void print_peers(struct list *peer_list)
     char service[SERVICE_LEN];
     struct peer *peer = it->data;
     get_peers_url(peer->sa, host, service);
+    peer->service = service;
+    peer->host = host;
     printf("%s:%s\n", host, service);
   }
 }
