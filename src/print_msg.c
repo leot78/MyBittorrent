@@ -4,6 +4,12 @@
 #include "print_log.h"
 #include "my_string.h"
 
+unsigned int get_int(char *data, size_t index)
+{
+  return (data[index] << 24) | (data[index + 1] << 16)
+          | (data[index + 2] << 8) | a[index + 3];
+}
+
 char *get_printable_bitfield(char *payload, size_t len)
 {
   char *res = malloc(sizeof(char) * len);
@@ -11,14 +17,18 @@ char *get_printable_bitfield(char *payload, size_t len)
     err(1, "cannot malloc in get_printable_bitfield");
 
   for (int i = 0; i < len; ++i)
-    res[i] = payload[i];
+    res[i] = payload[i] + '0';
 
   return res;
 }
 
-char *get_printable(char *payload)
+char *get_printable_request(char *payload)
 {
-  char 
+  int index = get_int(payload, 0);
+  int begin = get_int(payload, 4);
+  int len = get_int(payload, 8);
+
+
 
 char *get_printable_payload(char *type, char *payload, size_t len)
 {
@@ -28,8 +38,7 @@ char *get_printable_payload(char *type, char *payload, size_t len)
     return get_printable_bitfield(payload, 4);
   else if (strcmp(type, "request") == 0)
     return get_printable_request(payload);
-
-
+}
 
 
 void print_send_log(struct peers *p, char *type, char *payload, size_t len)

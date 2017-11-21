@@ -46,7 +46,6 @@ void print_peers_connect_log(struct peer *p, char *action)
 int create_epoll(struct list *l_peers)
 {
   int epoll_fd = init_epoll();
-  size_t index = 0;
 
   for (struct node *cur = l_peers->head; cur; cur = cur->next)
   {
@@ -107,13 +106,15 @@ void handle_epoll_event(int epoll_fd, struct list *l_peer)
       }
       else if (events[i].events & EPOLLIN)
       {
-        char buf[4096];
+        unsigned char buf[4096];
         ssize_t len = recv(sock, buf, 4096, MSG_TRUNC);
-        printf("receive: %s\n", buf);
+        len = len;
+        printf("receive: %ld bytes '%s': ", len, buf);
+        printf("%s\n", get_hash(buf, len));
       }
       else if (events[i].events & EPOLLOUT)
       {
-//        print_peers_connect_log(p, "send: ");
+        print_peers_connect_log(p, "epollout\n");
       }
     }
   }
