@@ -1,0 +1,27 @@
+TODO:
+  [X]  autotool
+  
+  [X] parse torrent file:
+    [X] bencode
+  
+  [X] parse options
+
+  [X] pretty print
+
+  [X] tracker request:
+    [X] info hash
+    [X] send request
+    [X] get request
+    [X] parse request
+
+  [X] dump peers
+
+  [X] connect to peers
+
+  [] handle received messages
+
+  [] send messages
+
+  [] leech
+
+  [] seed
