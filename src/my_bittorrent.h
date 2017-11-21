@@ -45,13 +45,26 @@ struct raw_addr
   uint16_t port;
 } __attribute__ ((packed));
 
+struct raw_mess
+{
+  uint32_t len;
+  uint8_t id;
+} __attribute__ ((packed));
+
+struct client
+{
+  size_t len;
+  int *have;
+};
 struct peer
 {
   struct sockaddr_in *sa;
   int *have;
   int nb_pieces;
-  int interested;
-  int choked;
+  int client_interested;
+  int peer_interested;
+  int client_choked;
+  int peer_choked;
   int index_socket;
   char *url;
 };
@@ -75,5 +88,7 @@ char *get_hash(unsigned char *hash, size_t size);
 struct peer *create_sock(struct raw_addr *ra, int nb_pieces);
 struct list *decode_bin(char *binaries, int nb_pieces);
 void free_sock_list(struct list *l_sa);
+
+char *generate_handshake(unsigned char *info_hash);
 
 #endif /*! MY_BITTORRENT_H */

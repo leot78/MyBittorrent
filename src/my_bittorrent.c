@@ -62,6 +62,9 @@ int main(int argc, char **argv)
 
   char *filepath = argv[index];
   struct tracker *tracker = parse_file(filepath);
+  //test
+    printf("handshake=%s\n", generate_handshake(get_info_hash(tracker)));
+  //
   if (opt & PRINT)
   {
     print_json(tracker);
