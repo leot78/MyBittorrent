@@ -14,7 +14,7 @@ TODO:
     [X] get request
     [X] parse request
 
-  [X] dump peers
+  [X] dump peers -----> fix bug with torrent of multiple files
 
   [X] connect to peers
 
