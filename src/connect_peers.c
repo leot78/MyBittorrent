@@ -106,14 +106,15 @@ void handle_epoll_event(int epoll_fd, struct list *l_peer)
       }
       else if (events[i].events & EPOLLIN)
       {
-        char buf[4096];
+        unsigned char buf[4096];
         ssize_t len = recv(sock, buf, 4096, MSG_TRUNC);
         len = len;
-        printf("receive: %s\n", buf);
+        printf("receive: %ld bytes '%s': ", len, buf);
+        printf("%s\n", get_hash(buf, len));
       }
       else if (events[i].events & EPOLLOUT)
       {
-//        print_peers_connect_log(p, "send: ");
+        print_peers_connect_log(p, "epollout\n");
       }
     }
   }

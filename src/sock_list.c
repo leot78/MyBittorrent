@@ -69,6 +69,7 @@ void free_sock_list(struct list *l_sa)
     struct peer *peer = pop_front(l_sa);
     free(peer->sa);
     free(peer->have);
+    free(peer->url);
     free(peer);
   }
   free(l_sa);
