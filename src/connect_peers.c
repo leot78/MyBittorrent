@@ -1,3 +1,4 @@
+#include <arpa/inet.h>
 #include <err.h>
 #include <fcntl.h>
 #include <sys/epoll.h>
@@ -28,14 +29,13 @@ void print_peers_connect_log(struct peer *p, char *action)
 
   if (!p->url)
   {
-    /*char host[HOST_LEN];
+    char host[HOST_LEN];
     char service[SERVICE_LEN];
     get_peers_url(p->sa, host, service);
     char *tmp = concat(host, ":");
     char *url = concat(tmp, service);
     p->url = url;
-    free(tmp);*/
-    set_peers_url(p);
+    free(tmp);
   }
   char *msg = concat(action, p->url);
   print_log("peers", msg);
@@ -43,10 +43,9 @@ void print_peers_connect_log(struct peer *p, char *action)
 }
 
 
-int create_epoll(struct list *l_peers, int *arr_sock)
+int create_epoll(struct list *l_peers)
 {
   int epoll_fd = init_epoll();
-  size_t index = 0;
 
   for (struct node *cur = l_peers->head; cur; cur = cur->next)
   {
@@ -66,33 +65,25 @@ int create_epoll(struct list *l_peers, int *arr_sock)
       ev.events = EPOLLIN | EPOLLOUT;
       ev.data.fd = sock;
       epoll_ctl(epoll_fd, EPOLL_CTL_ADD, sock, &ev);
-      arr_sock[index] = sock;
-      peer->index_socket = index;
-      print_peers_connect_log(peer, "connect :");
+      peer->socket = sock;
+      print_peers_connect_log(peer, "connect : ");
     }
-    index++;
   }
   return epoll_fd;
 }
 
-int get_socket_index(int *arr_sock, int sock)
+struct peer *get_peer_from_sock(struct list *l_peer, int sock)
 {
-  size_t i = 0;
-  for (; i < 50; i++)
+  for (struct node *cur = l_peer->head; cur; cur = cur->next)
   {
-    if (arr_sock[i] == sock)
-      return i;
+    struct peer *p = cur->data;
+    if (p->socket == sock)
+      return p;
   }
-  return -1;
+  return NULL;
 }
 
-struct peer *get_peer_from_sock(struct list *l_peer, int *arr_sock, int sock)
-{
-  int sock_index = get_socket_index(arr_sock, sock);
-  return get_elt_at(l_peer, sock_index);
-}
-
-void handle_epoll_event(int epoll_fd, int *arr_sock, struct list *l_peer)
+void handle_epoll_event(int epoll_fd, struct list *l_peer)
 {
   struct epoll_event *events = malloc(sizeof(struct epoll_event) * 50);
   if (!events)
@@ -101,20 +92,24 @@ void handle_epoll_event(int epoll_fd, int *arr_sock, struct list *l_peer)
   int ndfs = 0;
   while ((ndfs = epoll_wait(epoll_fd, events, 50, 1000)) != 0)
   {
-    printf("ndfs : %d\n", ndfs);
     for (int i = 0; i < ndfs; i++)
     {
-      struct peer *p = get_peer_from_sock(l_peer, arr_sock, events[i].data.fd);
+      int sock = events[i].data.fd;
+      struct peer *p = get_peer_from_sock(l_peer, sock);
       if (events[i].events & EPOLLHUP)
       {
-        close(events[i].data.fd);
-        pop_elt(l_peer, p);
         print_peers_connect_log(p, "disconnect: ");
-        epoll_ctl(epoll_fd, EPOLL_CTL_DEL, events[i].data.fd, events + i);
+        pop_elt(l_peer, p);
+        epoll_ctl(epoll_fd, EPOLL_CTL_DEL, sock, events + i);
+        close(sock);
+        printf("ndfs : %d\n", ndfs);
       }
       else if (events[i].events & EPOLLIN)
       {
-  //      print_peers_connect_log(p, "recv: ");
+        char buf[4096];
+        ssize_t len = recv(sock, buf, 4096, MSG_TRUNC);
+        len = len;
+        printf("receive: %s\n", buf);
       }
       else if (events[i].events & EPOLLOUT)
       {

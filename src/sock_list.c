@@ -26,7 +26,6 @@ struct peer *init_peer(int nb_pieces, struct sockaddr_in *sa)
   peer->peer_interested = 1;
   peer->client_choked = 0;
   peer->peer_choked = 0;
-  peer->index_socket = -1;
   peer->nb_pieces = nb_pieces;
   peer->url = NULL;
   return peer;

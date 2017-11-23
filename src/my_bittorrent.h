@@ -18,6 +18,8 @@
 
 #include "dictionary.h"
 
+extern struct client g_client;
+
 enum options
 {
   NONE = 0x000,
@@ -55,6 +57,8 @@ struct client
 {
   size_t len;
   int *have;
+  int requested;
+  
 };
 struct peer
 {
@@ -65,7 +69,7 @@ struct peer
   int peer_interested;
   int client_choked;
   int peer_choked;
-  int index_socket;
+  int socket;
   char *url;
 };
 
