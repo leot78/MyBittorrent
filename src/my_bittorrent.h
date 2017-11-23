@@ -76,6 +76,7 @@ struct peer
   int peer_choked;
   int socket;
   char *url;
+  char *to_send;
 };
 
 char *compute_peer_id(void);
