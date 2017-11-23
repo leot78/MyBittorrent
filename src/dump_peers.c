@@ -59,7 +59,8 @@ size_t get_len_from_files(struct dictionary *dict)
 
   for (struct node *cur = file_list->head; cur; cur = cur->next)
   {
-    struct dictionary *tmp_dict = cur->data;
+    struct element *tmp = cur->data;
+    struct dictionary *tmp_dict = tmp->value;
     len += atoi(get_value(tmp_dict, "length", NULL));
   }
 
