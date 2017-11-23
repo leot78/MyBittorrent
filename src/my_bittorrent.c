@@ -78,6 +78,8 @@ int main(int argc, char **argv)
     if (peer_list->size == 0)
       return 1;
     print_peers(peer_list);
+    free_sock_list(peer_list);
+    delete_tracker(tracker);
     return 0;
   }
   
