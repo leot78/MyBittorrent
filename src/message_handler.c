@@ -6,15 +6,6 @@
 
 struct client g_client;
 
-char *generate_handshake(unsigned char *info_hash)
-{
-  char *tmp = (char*)info_hash;
-  char *len = "\x013";
-  char *startshake = concatn(len, "BitTorrent protocol\0\0\0\0\0\0\0\0", 1,
-                             27);
-  char *handshake = concatn(startshake, tmp, 28, 20);
-  return handshake;
-}
 
 char *choke_case(struct peer *peer)
 {
