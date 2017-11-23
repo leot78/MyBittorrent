@@ -51,14 +51,19 @@ struct raw_mess
 {
   uint32_t len;
   uint8_t id;
+  uint32_t elt_1;
+  uint32_t elt_2;
+  uint32_t elt_3;
 } __attribute__ ((packed));
 
 struct client
 {
-  size_t len;
+  size_t number_piece;
+  size_t piece_len;
+  size_t piece_max_len;
   int *have;
   int requested;
-  
+  char *piece;
 };
 struct peer
 {
@@ -84,6 +89,7 @@ char *get_tracker(char *urlp, unsigned char *sha1);
 void get_peers_url(struct sockaddr_in *sa, char *host, char *port);
 void set_peers_url(struct peer *peer);
 void print_peers(struct list *peer_list);
+size_t get_nb_piece(struct dictionary *dict);
 struct list *get_peers(struct tracker *tracker);
 
 void dump_peers(struct tracker *tracker);

@@ -11,6 +11,19 @@
 #include "print_log.h"
 #include "connect_peers.h"
 
+void init_client(struct tracker *tracker)
+{
+  struct dictionary *info_dict = get_value(tracker->dict, "info", NULL);
+  g_client.piece_max_len = atoi(get_value(info_dict, "piece length", NULL));
+  g_client.number_piece = get_nb_piece(info_dict);
+  g_client.have = calloc(g_client.number_piece, sizeof(int));
+  if (!g_client.have)
+    err(1, "Cound not allocate have list of client struct");
+  g_client.piece_len = 0;
+  g_client.requested = 0;
+  g_client.piece = NULL;
+}
+
 enum options parse_options(int argc, char **argv, int *index)
 {
   enum options opt = NONE;
