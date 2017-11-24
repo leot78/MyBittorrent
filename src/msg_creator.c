@@ -1,5 +1,6 @@
 #include <stdlib.h>
 
+#include "list/list.h"
 #include "my_bittorrent.h"
 #include "print_log.h"
 #include "int_utils.h"
@@ -21,8 +22,7 @@ char *generate_handshake(unsigned char *info_hash)
 void send_handshake(struct peer *p, unsigned char *info_hash)
 {
   char *handshake = generate_handshake(info_hash);
-  p->to_send = handshake;
-  p->msg_len = 48;
+  add_tail(p->q_send, handshake);
 }
 
 void send_simple_msg(struct peer *p, enum type_simple_msg type)
@@ -30,8 +30,7 @@ void send_simple_msg(struct peer *p, enum type_simple_msg type)
   char *str = calloc(1, 5);
   str[4] = type;
   str = uint32_to_char_net(str, 1);
-  p->to_send = str;
-  p->msg_len = 5;
+  add_tail(p->q_send, str);
 }
 
 void send_have(struct peer *p, size_t piece_index)
@@ -40,8 +39,7 @@ void send_have(struct peer *p, size_t piece_index)
   str[4] = 4;
   str = uint32_to_char_net(str, 5);
   uint32_to_char_net(str + 5, piece_index);
-  p->to_send = str;
-  p->msg_len = 9;
+  add_tail(p->q_send, str);
 }
 
 void send_bitfield(struct peer *p, size_t len, char *bitfield)
@@ -52,8 +50,7 @@ void send_bitfield(struct peer *p, size_t len, char *bitfield)
   char *res = concatn(str, bitfield, 5, len);
   free(str);
   //free(bitfield);
-  p->to_send = res;
-  p->msg_len = 5 + len;
+  add_tail(p->q_send, res);
 }
 
 void send_request(struct peer *p, size_t index, size_t begin, size_t length)
@@ -66,8 +63,7 @@ void send_request(struct peer *p, size_t index, size_t begin, size_t length)
   uint32_to_char_net(str + 9, begin);
   uint32_to_char_net(str + 13, length);
 
-  p->to_send = str;
-  p->msg_len = 17;
+  add_tail(p->q_send, str);
 }
 
 void send_piece(struct peer *p, size_t index, size_t begin,
@@ -85,6 +81,5 @@ void send_piece(struct peer *p, size_t index, size_t begin,
   //free(block->data);
   //free(block);
 
-  p->to_send = res;
-  p->msg_len = 13 + block->size;
+  add_tail(p->q_send, res);
 }

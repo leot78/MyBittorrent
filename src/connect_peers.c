@@ -85,6 +85,12 @@ struct peer *get_peer_from_sock(struct list *l_peer, int sock)
   return NULL;
 }
 
+size_t get_msg_len(void *msg)
+{
+  struct raw_mess *rm = msg;
+  return ntohl(rm->len) + 4;
+}
+
 void handle_epoll_event(int epoll_fd, struct list *l_peer)
 {
   struct epoll_event *events = malloc(sizeof(struct epoll_event) * 50);
@@ -121,12 +127,12 @@ void handle_epoll_event(int epoll_fd, struct list *l_peer)
       }
       else if (events[i].events & EPOLLOUT)
       {
-        if (p->to_send)
+        if (p->q_send->size)
         {
-          print_msg_log(p, p->to_send, "send: ");
-          send(sock, p->to_send, p->msg_len, 0);
+          char *msg = pop_front(p->q_send);
+          print_msg_log(p, msg, "send: ");
+          send(sock, msg, get_msg_len(msg), 0);
         }
-        p->to_send = NULL;
       }
     }
   }

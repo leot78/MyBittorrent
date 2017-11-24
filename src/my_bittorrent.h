@@ -70,6 +70,7 @@ struct client
   uint32_t requested;
   char *piece;
 };
+
 struct peer
 {
   struct sockaddr_in *sa;
@@ -81,8 +82,7 @@ struct peer
   int peer_choked;
   int socket;
   char *url;
-  char *to_send;
-  size_t msg_len;
+  struct list *q_send;
 };
 
 struct block
