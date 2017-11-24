@@ -12,6 +12,8 @@
 
 #define REQUEST_LEN 124
 
+#define MAX_PIECE_LEN 160000
+
 #include <err.h>
 #include <stddef.h>
 #include <stdint.h>
@@ -58,6 +60,7 @@ struct raw_mess
 
 struct client
 {
+  struct tracker *tracker;
   size_t number_piece;
   size_t piece_len;
   size_t piece_max_len;
@@ -90,8 +93,10 @@ char *get_tracker(char *urlp, unsigned char *sha1);
 void get_peers_url(struct sockaddr_in *sa, char *host, char *port);
 void set_peers_url(struct peer *peer);
 void print_peers(struct list *peer_list);
-size_t get_nb_piece(struct dictionary *dict);
 struct list *get_peers(struct tracker *tracker);
+
+size_t get_len_from_files(struct dictionary *dict);
+size_t get_nb_piece(struct dictionary *dict);
 
 void dump_peers(struct tracker *tracker);
 char *get_hash(unsigned char *hash, size_t size);

@@ -50,21 +50,26 @@ void piece_case(struct peer *peer, struct raw_mess raw)
   void *tmp = g_client.piece + raw.begin;
   tmp = memcpy(g_client.piece + raw.begin, &raw.elt_3, raw.len - 8);
   //A vérifier.
+  g_client.piece_len += raw.len - 8;
   g_client.requested = 0;
 }
 
-void make_request(struct peer *peer, struct raw_mess raw
-                  struct list *peer_list)
+void make_request(struct raw_mess raw, struct list *peer_list)
 {
   if (g_client.requested)
     return;
-  unsigned i = 0;
-  for(; i < peer_list->size; i++)
+  size_t i = 0;
+  struct peer *peer = list->head;
+  for (; peer; peer = peer->next)
   {
-    if (peer_list->have[i] && !g_client.have[i] && !peer->client_choked
-        && peer->client_interested)
+    for(; i < g_client.number_piece; i++)
     {
-      0
+      if (peer_list->have[i] && !g_client.have[i] && !peer->client_choked
+          && peer->client_interested)
+      {
+        if (i == g_client.number_piece - 1)
+          size_t len_last = g_client.piece_max_len
+        send_request(peer, i, piece_len, 
 
 char *message_handler(char *message/*, size_t len*/, struct peer *peer,
                       struct list *peer_list)

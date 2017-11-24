@@ -13,6 +13,7 @@
 /*
 void init_client(struct tracker *tracker)
 {
+  g_client.tracker = tracker;
   struct dictionary *info_dict = get_value(tracker->dict, "info", NULL);
   g_client.piece_max_len = atoi(get_value(info_dict, "piece length", NULL));
   g_client.number_piece = get_nb_piece(info_dict);
