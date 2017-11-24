@@ -10,7 +10,7 @@
 #include "print_json.h"
 #include "print_log.h"
 #include "connect_peers.h"
-
+/*
 void init_client(struct tracker *tracker)
 {
   struct dictionary *info_dict = get_value(tracker->dict, "info", NULL);
@@ -23,7 +23,7 @@ void init_client(struct tracker *tracker)
   g_client.requested = 0;
   g_client.piece = NULL;
 }
-
+*/
 enum options parse_options(int argc, char **argv, int *index)
 {
   enum options opt = NONE;
@@ -84,11 +84,11 @@ int main(int argc, char **argv)
     delete_tracker(tracker);
     return 0;
   }
-  
+
   init_log(opt & VERBOSE);
   struct list *peer_list = get_peers(tracker);
 
-    
+
   if (opt & PEERS)
   {
     if (peer_list->size == 0)
@@ -98,7 +98,7 @@ int main(int argc, char **argv)
     delete_tracker(tracker);
     return 0;
   }
-  
+
   int epoll_fd = create_epoll(peer_list);
   handle_epoll_event(epoll_fd, peer_list);
 

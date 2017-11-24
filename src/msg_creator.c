@@ -54,7 +54,7 @@ void send_request(struct peer *p, size_t index, size_t begin, size_t length)
   char *str = calloc(1, 17);
   str[4] = 6;
   str = uint32_to_char_net(str, 13);
-  
+
   uint32_to_char_net(str + 5, index);
   uint32_to_char_net(str + 9, begin);
   uint32_to_char_net(str + 13, length);
@@ -62,6 +62,20 @@ void send_request(struct peer *p, size_t index, size_t begin, size_t length)
   p->to_send = str;
 }
 
-void send_piece(struct peer *p, size_t index, size_t begin, char *block)
+void send_piece(struct peer *p, size_t index, size_t begin,
+                struct block *block)
 {
-  char *str
+  char *str = calloc(1, 13 + block->size);
+  str[4] = 7;
+  str = uint32_to_char_net(str, 9 + block->size);
+
+  uint32_to_char_net(str + 5, index);
+  uint32_to_char_net(str + 9, begin);
+
+  char *res = concatn(str, block->data, 13, block->size);
+  free(str);
+  free(block->data);
+  free(block);
+
+  p->to_send = res;
+}

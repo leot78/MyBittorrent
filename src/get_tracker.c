@@ -103,6 +103,6 @@ char *get_tracker(char *urlp, unsigned char *sha1)
   curl_global_cleanup();
   free(request); 
   if (res)
-    err(res, errbuff);
+    err(res, "%s", errbuff);
   return buff.data;
 }
