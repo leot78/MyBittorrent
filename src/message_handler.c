@@ -32,10 +32,17 @@ void not_interested_case(struct peer *peer)
 void bitfield_case(struct peer *peer, char *bitfield, size_t len)
 {
   size_t bitfield_len = len - 1;
-  for (unsigned i = 0; i < bitfield_len; i++)
+  size_t cpt = 0;
+  for (unsigned j = 0; j < bitfield_len; j++)
   {
-    //peer->have[i] = bitfield[i];
-    peer->have[i] = (bitfield[i] & (1 << i)) >> i;
+    for (unsigned i = 0; i < 8; i++)
+    {
+      //peer->have[i] = bitfield[i];
+      peer->have[cpt] = (bitfield[j] & (1 << i)) >> i;
+      cpt++;
+      if (cpt == g_client.number_piece)
+        return;
+    }
   }
 }
 
