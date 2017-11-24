@@ -82,8 +82,8 @@ void send_piece(struct peer *p, size_t index, size_t begin,
 
   char *res = concatn(str, block->data, 13, block->size);
   free(str);
-  free(block->data);
-  free(block);
+  //free(block->data);
+  //free(block);
 
   p->to_send = res;
   p->msg_len = 13 + block->size;

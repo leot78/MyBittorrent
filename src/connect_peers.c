@@ -108,7 +108,7 @@ void handle_epoll_event(int epoll_fd, struct list *l_peer)
       }
       else if (events[i].events & EPOLLIN)
       {
-        char buf[4096];
+        char buf[MAX_MSG_LEN];
         ssize_t len = recv(sock, buf, 4096, MSG_TRUNC);
         if (len == -1)
           printf("ERROR RECV\n");
@@ -118,8 +118,6 @@ void handle_epoll_event(int epoll_fd, struct list *l_peer)
       }
       else if (events[i].events & EPOLLOUT)
       {
-        send_handshake(p, NULL);
-        //print_peers_connect_log(p, "epollout");
         if (p->to_send)
         {
           print_msg_log(p, p->to_send, "send: ");

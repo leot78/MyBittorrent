@@ -47,8 +47,8 @@ char *concat_request(char *res, struct raw_mess *rm)
 
 char *concat_piece(char *res, struct raw_mess *rm)
 {
-  char *index = my_itoa(rm->elt_1);
-  char *begin = my_itoa(rm->elt_2);
+  char *index = my_itoa(ntohl(rm->elt_1));
+  char *begin = my_itoa(ntohl(rm->elt_2));
 
   char *tmp1 = concat(res, index);
   free(res);

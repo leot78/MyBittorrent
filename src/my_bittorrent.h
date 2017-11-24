@@ -14,6 +14,8 @@
 
 #define MAX_PIECE_LEN 160000
 
+#define MAX_MSG_LEN 14009
+
 #include <err.h>
 #include <stddef.h>
 #include <stdint.h>
@@ -80,6 +82,13 @@ struct peer
   int socket;
   char *url;
   char *to_send;
+  size_t msg_len;
+};
+
+struct block
+{
+  size_t size;
+  void *data;
 };
 
 char *compute_peer_id(void);
