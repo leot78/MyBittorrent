@@ -33,7 +33,7 @@ void bitfield_case(struct peer *peer, char *bitfield, size_t len)
     peer->have[i] = (i & (1 << i)) >> i;
 }
 
-void have_case(struct peer *peer, unsigned id)
+void have_case(struct peer *peer, uint32_t id)
 {
   peer->have[id] = 1;
   if (!client[id])
@@ -45,10 +45,13 @@ void have_case(struct peer *peer, unsigned id)
 
 void piece_case(struct peer *peer, struct raw_mess raw)
 {
-  if(g_client.requested != raw.elt)
+  raw.elt_1 = ntohl(raw.elt_1);
+  raw.elt_2 = ntohl(raw.elt_2);
+  raw.elt_3 = ntohl(raw.elt_3);
+  if(g_client.requested != raw.elt1)
     return;
-  void *tmp = g_client.piece + raw.begin;
-  tmp = memcpy(g_client.piece + raw.begin, &raw.elt_3, raw.len - 8);
+  void *tmp = g_client.piece + raw.elt_2;
+  tmp = memcpy(g_client.piece + raw.elt_2, &raw.elt_3, raw.len - 8);
   //A vérifier.
   g_client.piece_len += raw.len - 8;
   g_client.requested = 0;

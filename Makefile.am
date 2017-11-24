@@ -30,4 +30,5 @@ my_bittorrent_SOURCES = src/dictionary.c \
 												src/msg_creator.c \
 												src/msg_creator.h \
 												src/int_utils.c \
-												src/int_utils.h
+												src/int_utils.h \
+												src/message_handler.c

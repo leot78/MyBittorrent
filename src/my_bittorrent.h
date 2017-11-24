@@ -107,4 +107,6 @@ void free_sock_list(struct list *l_sa);
 
 char *generate_handshake(unsigned char *info_hash);
 
+void message_handler(char *message, struct peer *peer, struct list *peer_list);
+
 #endif /*! MY_BITTORRENT_H */

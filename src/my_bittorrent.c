@@ -10,7 +10,7 @@
 #include "print_json.h"
 #include "print_log.h"
 #include "connect_peers.h"
-/*
+
 void init_client(struct tracker *tracker)
 {
   g_client.tracker = tracker;
@@ -24,7 +24,7 @@ void init_client(struct tracker *tracker)
   g_client.requested = 0;
   g_client.piece = NULL;
 }
-*/
+
 enum options parse_options(int argc, char **argv, int *index)
 {
   enum options opt = NONE;
