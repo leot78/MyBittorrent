@@ -12,6 +12,7 @@
 #include "my_bittorrent.h"
 #include "list/list.h"
 #include "print_log.h"
+#include "print_msg.h"
 #include "my_string.h"
 
 int init_epoll(void)
@@ -106,15 +107,16 @@ void handle_epoll_event(int epoll_fd, struct list *l_peer)
       }
       else if (events[i].events & EPOLLIN)
       {
-        unsigned char buf[4096];
+        char buf[4096];
         ssize_t len = recv(sock, buf, 4096, MSG_TRUNC);
         len = len;
-        printf("receive: %ld bytes '%s': ", len, buf);
-        printf("%s\n", get_hash(buf, len));
+        printf("LEN = %ld\n", len);
+        if (len)
+          print_msg_log(p, buf, "recv: ");
       }
       else if (events[i].events & EPOLLOUT)
       {
-        print_peers_connect_log(p, "epollout\n");
+        //print_peers_connect_log(p, "epollout");
       }
     }
   }
