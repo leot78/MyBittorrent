@@ -114,7 +114,10 @@ void handle_epoll_event(int epoll_fd, struct list *l_peer)
           printf("ERROR RECV\n");
         printf("LEN = %ld\n", len);
         if (len > 0)
+        {
           print_msg_log(p, buf, "recv: ");
+          message_handler(buf, p, l_peer);
+        }
       }
       else if (events[i].events & EPOLLOUT)
       {
