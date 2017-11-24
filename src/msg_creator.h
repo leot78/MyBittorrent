@@ -1,6 +1,8 @@
 #ifndef MSG_CREATOR_H
 # define MSG_CREATOR_H
 
+#include "my_bittorrent.h"
+
 enum type_simple_msg
 {
   CHOKE = 0,

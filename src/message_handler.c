@@ -1,6 +1,9 @@
 #include <arpa/inet.h>
 #include <stdint.h>
+#include <string.h>
 
+#include "list/list.h"
+#include "msg_creator.h"
 #include "my_bittorrent.h"
 #include "my_string.h"
 
@@ -29,45 +32,50 @@ void not_interested_case(struct peer *peer)
 void bitfield_case(struct peer *peer, char *bitfield, size_t len)
 {
   size_t bitfield_len = len - 1;
-  for (unsigned i = 0; i < bitfield_len; i++) 
-    peer->have[i] = (i & (1 << i)) >> i;
+  for (unsigned i = 0; i < bitfield_len; i++)
+  {
+    peer->have[i] = bitfield[i];
+    //peer->have[i] = (bitfield & (1 << i)) >> i;
+  }
 }
 
 void have_case(struct peer *peer, uint32_t id)
 {
   peer->have[id] = 1;
-  if (!client[id])
+  if (!g_client.have[id])
   {
     peer->client_interested = 1;
-    send_interested(peer);
+    send_simple_msg(peer, INTEREST);
   }
 }
 
-void piece_case(struct peer *peer, struct raw_mess raw)
+void piece_case(struct raw_mess *raw)
 {
-  raw.elt_1 = ntohl(raw.elt_1);
-  raw.elt_2 = ntohl(raw.elt_2);
-  raw.elt_3 = ntohl(raw.elt_3);
-  if(g_client.requested != raw.elt1)
+  raw->elt_1 = ntohl(raw->elt_1);
+  raw->elt_2 = ntohl(raw->elt_2);
+  raw->elt_3 = ntohl(raw->elt_3);
+  if(g_client.requested != raw->elt_1)
     return;
-  void *tmp = g_client.piece + raw.elt_2;
-  tmp = memcpy(g_client.piece + raw.elt_2, &raw.elt_3, raw.len - 8);
+  char *tmp = g_client.piece + raw->elt_2;
+  tmp = memcpy(tmp, &raw->elt_3, raw->len - 8);
+
   //A vérifier.
-  g_client.piece_len += raw.len - 8;
+  g_client.piece_len += raw->len - 8;
   g_client.requested = 0;
 }
 
-void make_request(struct raw_mess raw, struct list *peer_list)
+void make_request(struct list *peer_list)
 {
   if (g_client.requested)
     return;
   size_t i = 0;
-  struct peer *peer = list->head;
-  for (; peer; peer = peer->next)
+  struct node *cur = peer_list->head;
+  for (; cur; cur = cur->next)
   {
+    struct peer *peer = cur->data;
     for(; i < g_client.number_piece; i++)
     {
-      if (peer_list->have[i] && !g_client.have[i] && !peer->client_choked
+      if (peer->have[i] && !g_client.have[i] && !peer->client_choked
           && peer->client_interested)
       {
         size_t piece_len = g_client.piece_max_len;
@@ -92,8 +100,6 @@ void message_handler(char *message/*, size_t len*/, struct peer *peer,
   struct raw_mess *rm = tmp;
   rm->len = ntohl(rm->len);
   rm->id = ntohl(rm->id);
-  if (!len_m)
-    return NULL;
   switch(rm->id)
   {
     case 0:
@@ -117,19 +123,18 @@ void message_handler(char *message/*, size_t len*/, struct peer *peer,
       break;
       //have
     case 5:
-      bitfield_case(peer, rm->elt_1, rm->len);
+      bitfield_case(peer, message + 5, rm->len);
       break;
       //bitfield
     case 6:
       break;
       //request
     case 7:
-      piece_case(peer, rm);
+      piece_case(rm);
       break;
       //piece
     default:
       return;
   }
-  make_request(rm, peer_list);
-  return message;
+  make_request(peer_list);
 }

@@ -67,7 +67,7 @@ struct client
   size_t piece_len;
   size_t piece_max_len;
   int *have;
-  int requested;
+  uint32_t requested;
   char *piece;
 };
 struct peer
