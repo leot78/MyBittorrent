@@ -1,9 +1,10 @@
+#include <stdlib.h>
 #include <arpa/inet.h>
 #include <err.h>
 
 char *uint32_to_char_net(char *res, uint32_t n)
 {
-  n = htonl(n);
+  //n = htonl(n);
   size_t shift = 8 * 3;
   for (size_t i = 0; i < 4; ++i)
   {
@@ -33,7 +34,7 @@ uint32_t to_uint32_host(char *data, size_t index)
 {
   size_t shift = 8 * 3;
   uint32_t res = data[index] << shift;
-  for (size_t i = 1; i < len; ++i)
+  for (size_t i = 1; i < 4; ++i)
   {
     res |= data[index + i] << shift;
     shift -= 8;
