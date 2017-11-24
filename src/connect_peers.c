@@ -87,8 +87,27 @@ struct peer *get_peer_from_sock(struct list *l_peer, int sock)
 
 size_t get_msg_len(void *msg)
 {
+  char *tmp = msg;
+  if (tmp[0] == 0x13)
+    return 68;
   struct raw_mess *rm = msg;
   return ntohl(rm->len) + 4;
+}
+
+void parse_buffer(size_t len, char *buf, struct list *l_peer, struct peer *p)
+{
+  size_t index = 0;
+  while (index < len)
+  {
+    char *cur = buf + index;
+    size_t msg_len = get_msg_len(cur);
+    if (msg_len > 4)
+    {
+      print_msg_log(p, cur, "recv: ");
+      message_handler(cur, p, l_peer);
+    }
+    index += msg_len;
+  }
 }
 
 void handle_epoll_event(int epoll_fd, struct list *l_peer)
@@ -96,6 +115,8 @@ void handle_epoll_event(int epoll_fd, struct list *l_peer)
   struct epoll_event *events = malloc(sizeof(struct epoll_event) * 50);
   if (!events)
     err(1, "cannot malloc struct epoll_event");
+
+  make_all_handshake(l_peer);
 
   int ndfs = 0;
   while ((ndfs = epoll_wait(epoll_fd, events, 50, 1000)) != 0)
@@ -115,15 +136,12 @@ void handle_epoll_event(int epoll_fd, struct list *l_peer)
       else if (events[i].events & EPOLLIN)
       {
         char buf[MAX_MSG_LEN];
-        ssize_t len = recv(sock, buf, 4096, MSG_TRUNC);
+        ssize_t len = recv(sock, buf, MAX_MSG_LEN, 0);
         if (len == -1)
           printf("ERROR RECV\n");
         printf("LEN = %ld\n", len);
         if (len > 0)
-        {
-          print_msg_log(p, buf, "recv: ");
-          message_handler(buf, p, l_peer);
-        }
+          parse_buffer(len, buf, l_peer, p);
       }
       else if (events[i].events & EPOLLOUT)
       {
@@ -131,7 +149,9 @@ void handle_epoll_event(int epoll_fd, struct list *l_peer)
         {
           char *msg = pop_front(p->q_send);
           print_msg_log(p, msg, "send: ");
-          send(sock, msg, get_msg_len(msg), 0);
+          size_t len = get_msg_len(msg);
+          printf("len msg = %ld\n", len);
+          send(sock, msg, len, 0);
         }
       }
     }

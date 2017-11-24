@@ -7,7 +7,7 @@
 #include "my_string.h"
 #include "msg_creator.h"
 
-char *generate_handshake(unsigned char *info_hash)
+char *generate_handshake(unsigned char *info_hash, char *peer_id)
 {
   char *tmp = (char*)info_hash;
   char *len = "\x013";
@@ -15,13 +15,17 @@ char *generate_handshake(unsigned char *info_hash)
                              27);
   if (!tmp)
     return startshake;
-  char *handshake = concatn(startshake, tmp, 28, 20);
+  char *harlemshake = concatn(startshake, tmp, 28, 20);
+  free(startshake);
+  char *handshake = concatn(harlemshake, peer_id, 48, 20);
+  free(harlemshake);
+
   return handshake;
 }
 
-void send_handshake(struct peer *p, unsigned char *info_hash)
+void send_handshake(struct peer *p, unsigned char *info_hash, char *peer_id)
 {
-  char *handshake = generate_handshake(info_hash);
+  char *handshake = generate_handshake(info_hash, peer_id);
   add_tail(p->q_send, handshake);
 }
 

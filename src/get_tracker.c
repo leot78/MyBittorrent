@@ -54,9 +54,8 @@ char *prepare_request(char *urlp, unsigned char *info_hash,
 {
   size_t total_size = strlen(urlp) + REQUEST_LEN;
   char *get_request = malloc(sizeof(char) * total_size);
-  char *peer_id = compute_peer_id();
-  char *tmp = curl_easy_escape(handle, peer_id, 0);
-  free(peer_id);
+  char *peer_id = g_client.peer_id;
+  char *tmp = curl_easy_escape(handle, peer_id, 20);
   peer_id = tmp;
   if (!get_request)
     err(1, "Could not allocate string request");

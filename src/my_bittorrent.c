@@ -23,6 +23,7 @@ void init_client(struct tracker *tracker)
   g_client.piece_len = 0;
   g_client.requested = 0;
   g_client.piece = NULL;
+  g_client.peer_id = compute_peer_id();
 }
 
 enum options parse_options(int argc, char **argv, int *index)
@@ -76,6 +77,7 @@ int main(int argc, char **argv)
 
   char *filepath = argv[index];
   struct tracker *tracker = parse_file(filepath);
+  init_client(tracker);
   //test
   //printf("handshake=%s\n", generate_handshake(get_info_hash(tracker)));
   //

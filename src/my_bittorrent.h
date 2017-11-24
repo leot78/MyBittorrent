@@ -69,6 +69,7 @@ struct client
   int *have;
   uint32_t requested;
   char *piece;
+  char *peer_id;
 };
 
 struct peer
@@ -114,8 +115,7 @@ struct peer *create_sock(struct raw_addr *ra, int nb_pieces);
 struct list *decode_bin(char *binaries, int nb_pieces);
 void free_sock_list(struct list *l_sa);
 
-char *generate_handshake(unsigned char *info_hash);
-
 void message_handler(char *message, struct peer *peer, struct list *peer_list);
+void make_all_handshake(struct list *peer_list);
 
 #endif /*! MY_BITTORRENT_H */

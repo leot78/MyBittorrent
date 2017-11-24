@@ -34,8 +34,8 @@ void bitfield_case(struct peer *peer, char *bitfield, size_t len)
   size_t bitfield_len = len - 1;
   for (unsigned i = 0; i < bitfield_len; i++)
   {
-    peer->have[i] = bitfield[i];
-    //peer->have[i] = (bitfield & (1 << i)) >> i;
+    //peer->have[i] = bitfield[i];
+    peer->have[i] = (bitfield[i] & (1 << i)) >> i;
   }
 }
 
@@ -99,7 +99,7 @@ void make_all_handshake(struct list *peer_list)
   for (; cur; cur = cur->next)
   {
     struct peer *peer = cur->data;
-    send_handshake(peer);
+    send_handshake(peer, g_client.tracker->info_hash, g_client.peer_id);
   }
 }
 
@@ -109,7 +109,6 @@ void message_handler(char *message/*, size_t len*/, struct peer *peer,
   void *tmp = message;
   struct raw_mess *rm = tmp;
   rm->len = ntohl(rm->len);
-  rm->id = ntohl(rm->id);
   switch(rm->id)
   {
     case 0:

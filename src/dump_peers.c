@@ -57,7 +57,7 @@ struct list *get_peers(struct tracker *tracker)
   struct dictionary *dict = get_value(tracker->dict, "info", NULL);
   size_t nb_piece = get_nb_piece(dict);
   char *tracker_response = get_tracker(urlp, hash);
-  free(hash);
+  //free(hash);
   return decode_bin(tracker_response, nb_piece);
   //printf("raw tracker response :\n%s", tracker_response);
 }
