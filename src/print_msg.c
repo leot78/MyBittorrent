@@ -48,7 +48,7 @@ void print_send_log(struct peers *p, char *type, char *payload, size_t len)
   free(msg1);
   char *msg3 = concat(msg2, type);
   free(msg2);
-  
+
   if (payload)
   {
     char *msg4 = concat(msg3, " ");
