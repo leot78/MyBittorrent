@@ -108,7 +108,7 @@ void handle_epoll_event(int epoll_fd, struct list *l_peer)
       }
       else if (events[i].events & EPOLLIN)
       {
-        char buf[4096];
+        char buf[MAX_MSG_LEN];
         ssize_t len = recv(sock, buf, 4096, MSG_TRUNC);
         if (len == -1)
           printf("ERROR RECV\n");
