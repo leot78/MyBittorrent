@@ -93,6 +93,16 @@ void make_request(struct list *peer_list)
   }
 }
 
+void make_all_handshake(struct list *peer_list)
+{
+  struct node *cur = peer_list->head;
+  for (; cur; cur = cur->next)
+  {
+    struct peer *peer = cur->data;
+    send_handshake(peer);
+  }
+}
+
 void message_handler(char *message/*, size_t len*/, struct peer *peer,
                       struct list *peer_list)
 {

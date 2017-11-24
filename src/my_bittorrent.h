@@ -42,7 +42,7 @@ struct data_chunk
 struct tracker
 {
   struct dictionary *dict;
-  char *info;
+  unsigned char *info_hash;
 };
 
 struct raw_addr
