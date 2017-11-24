@@ -67,11 +67,22 @@ void make_request(struct raw_mess raw, struct list *peer_list)
       if (peer_list->have[i] && !g_client.have[i] && !peer->client_choked
           && peer->client_interested)
       {
+        size_t piece_len = g_client.piece_max_len;
         if (i == g_client.number_piece - 1)
-          size_t len_last = g_client.piece_max_len
-        send_request(peer, i, piece_len, 
+        {
+          struct dictionary *dict = get_value(g_client.tracker->dict, "info", 
+                                              NULL);
+          piece_len = get_len_from_files(dict) % g_client.piece_max_len;
+        }
+        piece_len = piece_len < MAX_PIECE_LEN ? piece_len : MAX_PIECE_LEN;
+        send_request(peer, i, g_client.piece_len, piece_len);
+        return;
+      }
+    }
+  }
+}
 
-char *message_handler(char *message/*, size_t len*/, struct peer *peer,
+void message_handler(char *message/*, size_t len*/, struct peer *peer,
                       struct list *peer_list)
 {
   void *tmp = message;
@@ -111,10 +122,11 @@ char *message_handler(char *message/*, size_t len*/, struct peer *peer,
       //request
     case 7:
       piece_case(peer, rm);
+      break;
       //piece
     default:
-      //
+      return;
   }
-  len = len;
+  make_request(rm, peer_list);
   return message;
 }
