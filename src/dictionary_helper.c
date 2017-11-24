@@ -1,4 +1,9 @@
-#include "my_bittorent.h"
+#include <err.h>
+#include <stdlib.h>
+
+#include "dictionary.h"
+#include "list/list.h"
+#include "my_string.h"
 
 size_t get_len_from_files(struct dictionary *dict)
 {

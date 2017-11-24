@@ -26,4 +26,8 @@ my_bittorrent_SOURCES = src/dictionary.c \
 												src/connect_peers.h \
 												src/print_msg.c \
 												src/print_msg.h \
-												src/dictionary_helper.c
+												src/dictionary_helper.c \
+												src/msg_creator.c \
+												src/msg_creator.h \
+												src/int_utils.c \
+												src/int_utils.h

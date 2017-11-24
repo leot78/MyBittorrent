@@ -14,6 +14,7 @@
 #include "print_log.h"
 #include "print_msg.h"
 #include "my_string.h"
+#include "msg_creator.h"
 
 int init_epoll(void)
 {
@@ -109,14 +110,22 @@ void handle_epoll_event(int epoll_fd, struct list *l_peer)
       {
         char buf[4096];
         ssize_t len = recv(sock, buf, 4096, MSG_TRUNC);
-        len = len;
+        if (len == -1)
+          printf("ERROR RECV\n");
         printf("LEN = %ld\n", len);
-        if (len)
+        if (len > 0)
           print_msg_log(p, buf, "recv: ");
       }
       else if (events[i].events & EPOLLOUT)
       {
+        send_handshake(p, NULL);
         //print_peers_connect_log(p, "epollout");
+        if (p->to_send)
+        {
+          print_msg_log(p, p->to_send, "send: ");
+          send(sock, p->to_send, p->msg_len, 0);
+        }
+        p->to_send = NULL;
       }
     }
   }

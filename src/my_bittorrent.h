@@ -68,6 +68,7 @@ struct client
   int requested;
   char *piece;
 };
+
 struct peer
 {
   struct sockaddr_in *sa;
@@ -80,6 +81,13 @@ struct peer
   int socket;
   char *url;
   char *to_send;
+  size_t msg_len;
+};
+
+struct block
+{
+  size_t size;
+  void *data;
 };
 
 char *compute_peer_id(void);
