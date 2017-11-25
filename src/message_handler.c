@@ -113,6 +113,8 @@ void make_all_handshake(struct list *peer_list)
 void message_handler(char *message/*, size_t len*/, struct peer *peer,
                       struct list *peer_list)
 {
+  if (message[0] == 0x13)
+    return;
   void *tmp = message;
   struct raw_mess *rm = tmp;
   rm->len = ntohl(rm->len);
