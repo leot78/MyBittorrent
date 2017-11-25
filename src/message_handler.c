@@ -74,15 +74,15 @@ void piece_case(struct raw_mess *raw)
   //A vérifier.
   g_client.piece_len += raw->len - 8;
   g_client.requested = 0;
-
+  size_t piece_len = g_client.piece_max_len;
   if (raw->elt_1 == g_client.number_piece - 1)
   {
     struct dictionary *dict = get_value(g_client.tracker->dict, "info", 
                                               NULL);
     piece_len = get_len_from_files(dict) % g_client.piece_max_len;
   }
-  piece_len = piece_len < g_client.piece_max_len
-              ? piece_len : g_client.piece_max;
+  //piece_len = piece_len < g_client.piece_max_len
+  //            ? piece_len : g_client.piece_max;
   if (g_client.piece_len == piece_len)
   {
     if (check_piece(piece_len, raw->elt_1))
