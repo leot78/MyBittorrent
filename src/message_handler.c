@@ -35,7 +35,7 @@ void bitfield_case(struct peer *peer, char *bitfield, size_t len)
   size_t cpt = 0;
   for (unsigned j = 0; j < bitfield_len; j++)
   {
-    for (unsigned i = 0; i < 8; i++)
+    for (int i = 7; i >= 0; --i)
     {
       //peer->have[i] = bitfield[i];
       peer->have[cpt] = (bitfield[j] & (1 << i)) >> i;
@@ -113,6 +113,8 @@ void make_all_handshake(struct list *peer_list)
 void message_handler(char *message/*, size_t len*/, struct peer *peer,
                       struct list *peer_list)
 {
+  if (message[0] == 0x13)
+    return;
   void *tmp = message;
   struct raw_mess *rm = tmp;
   rm->len = ntohl(rm->len);
