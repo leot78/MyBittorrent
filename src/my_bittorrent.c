@@ -22,6 +22,8 @@ void init_client(struct tracker *tracker)
     err(1, "Cound not allocate have list of client struct");
   g_client.piece_len = 0;
   g_client.requested = 0;
+  g_client.request_id = -1;
+  g_client.finish = 0;
   g_client.piece = NULL;
   g_client.peer_id = compute_peer_id();
 }

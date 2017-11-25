@@ -12,9 +12,9 @@
 
 #define REQUEST_LEN 124
 
-#define MAX_PIECE_LEN 1600
+#define MAX_PIECE_LEN 16000
 
-#define MAX_MSG_LEN 14009
+#define MAX_MSG_LEN 16009
 
 #include <err.h>
 #include <stddef.h>
@@ -68,8 +68,10 @@ struct client
   size_t piece_max_len;
   int *have;
   uint32_t requested;
+  int request_id;
   char *piece;
   char *peer_id;
+  int finish;
 };
 
 struct peer

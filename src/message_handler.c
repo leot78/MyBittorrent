@@ -54,7 +54,7 @@ void bitfield_case(struct peer *peer, char *bitfield, size_t len)
 void have_case(struct peer *peer, uint32_t id)
 {
   peer->have[id] = 1;
-  if (!g_client.have[id])
+  if (!g_client.have[id] && !peer->client_interested)
   {
     peer->client_interested = 1;
     send_simple_msg(peer, INTEREST);
@@ -74,14 +74,47 @@ void piece_case(struct raw_mess *raw)
   //A vérifier.
   g_client.piece_len += raw->len - 8;
   g_client.requested = 0;
+
+  if (raw->elt_1 == g_client.number_piece - 1)
+  {
+    struct dictionary *dict = get_value(g_client.tracker->dict, "info", 
+                                              NULL);
+    piece_len = get_len_from_files(dict) % g_client.piece_max_len;
+  }
+  piece_len = piece_len < g_client.piece_max_len
+              ? piece_len : g_client.piece_max;
+  if (g_client.piece_len == piece_len)
+  {
+    if (check_piece(piece_len, raw->elt_1))
+    {
+      write_piece(raw->elt_1);
+      g_client.have[raw->elt_1] = 1;
+      g_client.piece = NULL;
+      g_client.piece_len = 0;
+      g_client.request_id = -1;
+      //propagate have
+    }
+  }
 }
 
-void make_request(struct list *peer_list)
+void verify_have(size_t i)
 {
-  if (g_client.requested)
-    return;
-  size_t i = 0;
-  struct node *cur = peer_list->head;
+  size_t piece_len = g_client.piece_max_len;
+  if (i == g_client.number_piece - 1)
+  {
+    struct dictionary *dict = get_value(g_client.tracker->dict, "info",
+        NULL);
+    piece_len = get_len_from_files(dict) % g_client.piece_max_len;
+  }
+  piece_len = piece_len < MAX_PIECE_LEN ? piece_len : MAX_PIECE_LEN;
+  send_request(peer, i, g_client.piece_len, piece_len);
+  g_client.requested = 1;
+  g_client.request_id = i;
+  return;
+}
+
+void find_peer(void)
+{
   for (; cur; cur = cur->next)
   {
     struct peer *peer = cur->data;
@@ -91,16 +124,31 @@ void make_request(struct list *peer_list)
     {
       if (peer->have[i] && !g_client.have[i] && !peer->client_choked)
       {
-        size_t piece_len = g_client.piece_max_len;
-        if (i == g_client.number_piece - 1)
-        {
-          struct dictionary *dict = get_value(g_client.tracker->dict, "info", 
-                                              NULL);
-          piece_len = get_len_from_files(dict) % g_client.piece_max_len;
-        }
-        piece_len = piece_len < MAX_PIECE_LEN ? piece_len : MAX_PIECE_LEN;
-        send_request(peer, i, g_client.piece_len, piece_len);
-        g_client.requested = 1;
+        verify_have(i);
+        return;
+      }
+    }
+  }
+}
+
+void make_request(struct list *peer_list)
+{
+  if (g_client.requested)
+    return;
+  struct node *cur = peer_list->head;
+  if (g_client.request_id == -1)
+    find_peer();
+  else
+  {
+    size_t i = g_client.request_id;
+    for (; cur; cur = cur->next)
+    {
+      struct peer *peer = cur->data;
+      if(!peer->client_interested)
+        continue;
+      if (peer->have[i] && !g_client.have[i] && !peer->client_choked)
+      {
+        verify_have(i);
         return;
       }
     }
@@ -117,7 +165,7 @@ void make_all_handshake(struct list *peer_list)
   }
 }
 
-void message_handler(char *message/*, size_t len*/, struct peer *peer,
+int message_handler(char *message/*, size_t len*/, struct peer *peer,
                       struct list *peer_list)
 {
   if (message[0] == 0x13)
