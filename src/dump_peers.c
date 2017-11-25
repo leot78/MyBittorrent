@@ -15,12 +15,18 @@
 #include "parsing.h"
 #include "print_log.h"
 
+/**
+** Set host and service with info from sa.
+*/
 void get_peers_url(struct sockaddr_in *sa, char *host, char *service)
 {
   getnameinfo((struct sockaddr*)sa, sizeof(struct sockaddr), host,
               HOST_LEN, service, SERVICE_LEN, NI_NUMERICHOST | NI_NUMERICSERV);
 }
 
+/**
+** Concatene host and service.
+*/
 void set_peers_url(struct peer *peer)
 {
   char host[HOST_LEN];
@@ -32,23 +38,23 @@ void set_peers_url(struct peer *peer)
   free(tmp);
 }
 
+/**
+** Print url of every peer.
+*/
 void print_peers(struct list *peer_list)
 {
   struct node *it = peer_list->head;
   for (; it; it = it->next)
   {
-    /*char host[HOST_LEN];
-    char service[SERVICE_LEN];
-    struct peer *peer = it->data;
-    get_peers_url(peer->sa, host, service);
-    peer->service = service;
-    peer->host = host;*/
     struct peer *peer = it->data;
     set_peers_url(peer);
     printf("%s\n", peer->url);
   }
 }
 
+/**
+** Get list of peer from tracker.
+*/
 struct list *get_peers(struct tracker *tracker)
 {
   unsigned char *hash = get_info_hash(tracker);
@@ -57,7 +63,5 @@ struct list *get_peers(struct tracker *tracker)
   struct dictionary *dict = get_value(tracker->dict, "info", NULL);
   size_t nb_piece = get_nb_piece(dict);
   char *tracker_response = get_tracker(urlp, hash);
-  //free(hash);
   return decode_bin(tracker_response, nb_piece);
-  //printf("raw tracker response :\n%s", tracker_response);
 }
