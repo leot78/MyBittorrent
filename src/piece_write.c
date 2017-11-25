@@ -14,11 +14,6 @@ void write_piece(uint32_t index)
   if (!f)
     err(1, "Could not open '%s' for writing", name);
   size_t offset = index * g_client.piece_max_len;
-  /*if (index == g_client.number_piece - 1)
-  {
-    size_t piece_len = get_len_from_files(info_dict) % g_client.piece_max_len;
-    offset = piece_len * g_client.piece_max_len;
-  }*/
   if ((fseek(f, offset, SEEK_SET)) == -1)
     err(1, "Could not seek index : %ld", index * g_client.piece_max_len);
   if ((fwrite(g_client.piece, sizeof(char),
