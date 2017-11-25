@@ -39,6 +39,11 @@ void bitfield_case(struct peer *peer, char *bitfield, size_t len)
     {
       //peer->have[i] = bitfield[i];
       peer->have[cpt] = (bitfield[j] & (1 << i)) >> i;
+      if (peer->have[cpt] == g_client.have[cpt] && !peer->client_interested)
+      {
+        peer->client_interested = 1;
+        send_simple_msg(peer, INTEREST);
+      }
       cpt++;
       if (cpt == g_client.number_piece)
         return;
