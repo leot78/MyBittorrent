@@ -73,6 +73,9 @@ char *concat_piece(char *res, struct raw_mess *rm)
 
 void print_msg_log(struct peer *p, char *msg, char *mode_msg)
 {
+  if (!log_is_active())
+    return;
+
   char *msg1 = concat(mode_msg, p->url);
   char *msg2 = concat(msg1, ": ");
   free(msg1);
