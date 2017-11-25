@@ -39,7 +39,7 @@ void bitfield_case(struct peer *peer, char *bitfield, size_t len)
     {
       //peer->have[i] = bitfield[i];
       peer->have[cpt] = (bitfield[j] & (1 << i)) >> i;
-      if (peer->have[cpt] == g_client.have[cpt] && !peer->client_interested)
+      if (peer->have[cpt] && !g_client.have[cpt] && !peer->client_interested)
       {
         peer->client_interested = 1;
         send_simple_msg(peer, INTEREST);
@@ -85,10 +85,11 @@ void make_request(struct list *peer_list)
   for (; cur; cur = cur->next)
   {
     struct peer *peer = cur->data;
+    if(!peer->client_interested)
+      continue;
     for(; i < g_client.number_piece; i++)
     {
-      if (peer->have[i] && !g_client.have[i] && !peer->client_choked
-          && peer->client_interested)
+      if (peer->have[i] && !g_client.have[i] && !peer->client_choked)
       {
         size_t piece_len = g_client.piece_max_len;
         if (i == g_client.number_piece - 1)
@@ -148,7 +149,7 @@ void message_handler(char *message/*, size_t len*/, struct peer *peer,
       break;
       //not interested
     case 4:
-      have_case(peer, rm->elt_1);
+      have_case(peer, ntohl(rm->elt_1));
       break;
       //have
     case 5:

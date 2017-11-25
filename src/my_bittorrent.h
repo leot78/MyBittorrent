@@ -12,7 +12,7 @@
 
 #define REQUEST_LEN 124
 
-#define MAX_PIECE_LEN 160000
+#define MAX_PIECE_LEN 1600
 
 #define MAX_MSG_LEN 14009
 

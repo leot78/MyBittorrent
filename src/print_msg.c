@@ -85,7 +85,7 @@ void print_msg_log(struct peer *p, char *msg, char *mode_msg)
   struct raw_mess *rm = (void *) msg;
   if (msg[0] == 0x13)
     res = concat(msg2, "handshake");
-  else if (ntohl(rm->len) == 0)
+  else if (ntohl(rm->len) <= 0)
   {
     free(msg2);
     return;
