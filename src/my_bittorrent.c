@@ -64,6 +64,32 @@ char *get_hash(unsigned char *hash, size_t size)
   return res;
 }
 
+void delete_client(void)
+{
+  free(g_client.have);
+  free(g_client.piece);
+  free(g_client.peer_id);
+}
+
+int opt_peers(struct list *peer_list, struct tracker *tracker)
+{
+  if (peer_list->size == 0)
+    return 1;
+  print_peers(peer_list);
+  free_sock_list(peer_list);
+  delete_tracker(tracker);
+  delete_client();
+  return 0;
+}
+
+int opt_print(struct tracker *tracker)
+{
+  print_json(tracker);
+  delete_tracker(tracker);
+  delete_client();
+  return 0;
+}
+
 int main(int argc, char **argv)
 {
   if (argc < 2 || argc > 4)
@@ -78,43 +104,29 @@ int main(int argc, char **argv)
     printf("Usage : %s [options] [files]\n", argv[0]);
     return 0;
   }
-
   char *filepath = argv[index];
   struct tracker *tracker = parse_file(filepath);
   init_client(tracker);
-  //test
-  //printf("handshake=%s\n", generate_handshake(get_info_hash(tracker)));
-  //
+  
   if (opt & PRINT)
-  {
-    print_json(tracker);
-    delete_tracker(tracker);
-    return 0;
-  }
+    return opt_print(tracker);
 
   init_log(opt & VERBOSE);
   struct list *peer_list = get_peers(tracker);
 
 
   if (opt & PEERS)
-  {
-    if (peer_list->size == 0)
-      return 1;
-    print_peers(peer_list);
-    free_sock_list(peer_list);
-    delete_tracker(tracker);
-    return 0;
-  }
+    return opt_peers(peer_list, tracker);
 
   int epoll_fd = create_epoll(peer_list);
   handle_epoll_event(epoll_fd, peer_list);
 
   if (opt & SEED)
-  {
     printf("--seed option selected: not implemented yet\n");
-  }
+  
   delete_tracker(tracker);
   free_sock_list(peer_list);
   delete_log_info();
+  delete_client();
   return 0;
 }
