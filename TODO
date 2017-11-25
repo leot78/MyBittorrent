@@ -18,10 +18,13 @@ TODO:
 
   [X] connect to peers
 
-  [] handle received messages
+  [X] handle received messages
 
-  [] send messages
+  [X] send messages
 
-  [] leech
+  [ ] leech
+    [X] easy_leech
+    [X] split
+    [ ] multifile
 
   [] seed
