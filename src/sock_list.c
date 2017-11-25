@@ -54,6 +54,7 @@ struct peer *create_sock(struct raw_addr *ra, int nb_pieces)
 struct list *decode_bin(char *binaries, int nb_pieces)
 {
   struct tracker *tr = parse_content(binaries);
+  tr->info_hash = NULL;
   size_t size = 0;
   struct raw_addr *ra = get_value(tr->dict, "peers", &size);
   //get raw address

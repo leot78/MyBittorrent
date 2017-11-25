@@ -53,6 +53,10 @@ char *concat_request(char *res, struct raw_mess *rm)
   tmp1 = concat(tmp2, len);
   free(tmp2);
 
+  free(index);
+  free(begin);
+  free(len);
+
   return tmp1;
 }
 
@@ -68,6 +72,8 @@ char *concat_piece(char *res, struct raw_mess *rm)
   tmp1 = concat(tmp2, begin);
   free(tmp2);
 
+  free(index);
+  free(begin);
   return tmp1;
 }
 
@@ -136,4 +142,5 @@ void print_msg_log(struct peer *p, char *msg, char *mode_msg)
   free(msg2);
 
   print_log("msg", res);
+  free(res);
 }

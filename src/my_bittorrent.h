@@ -12,9 +12,9 @@
 
 #define REQUEST_LEN 124
 
-#define MAX_PIECE_LEN 16000
+#define MAX_PIECE_LEN 1 << 14
 
-#define MAX_MSG_LEN 16009
+#define MAX_MSG_LEN (1 << 14) + 9
 
 #include <err.h>
 #include <stddef.h>

@@ -89,17 +89,15 @@ void piece_case(struct raw_mess *raw)
                                               NULL);
     piece_len = get_len_from_files(dict) % g_client.piece_max_len;
   }
-  //piece_len = piece_len < g_client.piece_max_len
-  //            ? piece_len : g_client.piece_max;
   if (g_client.piece_len == piece_len)
-  {
-    //if (check_piece(g_client.piece, g_client.piece_len, raw->elt_1))
-    //{
+  { 
+    if (check_piece(g_client.piece, g_client.piece_len, raw->elt_1))
+    {
       write_piece(raw->elt_1);
       g_client.have[raw->elt_1] = 1;
       //propagate have
       check_have();
-    //}
+    }
     g_client.request_id = -1;
     g_client.piece_len = 0;
   }
@@ -112,7 +110,8 @@ void verify_have(size_t i, struct peer *peer)
   {
     struct dictionary *dict = get_value(g_client.tracker->dict, "info",
         NULL);
-    piece_len = get_len_from_files(dict) % g_client.piece_max_len;
+    piece_len = (get_len_from_files(dict) % g_client.piece_max_len)
+                - g_client.piece_len;
   }
   piece_len = piece_len < MAX_PIECE_LEN ? piece_len : MAX_PIECE_LEN;
   send_request(peer, i, g_client.piece_len, piece_len);

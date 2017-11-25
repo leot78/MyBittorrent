@@ -40,6 +40,8 @@ char *get_tracker_url(struct tracker *tracker)
 void delete_tracker(struct tracker *tr)
 {
   delete_dict(tr->dict);
+  if (tr->info_hash)
+    free(tr->info_hash);
   free(tr);
 }
 

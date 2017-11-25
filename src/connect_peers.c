@@ -8,21 +8,15 @@
 #include <errno.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 
+#include "connect_peers.h"
 #include "my_bittorrent.h"
 #include "list/list.h"
 #include "print_log.h"
 #include "print_msg.h"
 #include "my_string.h"
 #include "msg_creator.h"
-
-int init_epoll(void)
-{
-  int epoll_fd = epoll_create(1);
-  if (epoll_fd == -1)
-    err(1, "cannot create epoll");
-  return epoll_fd;
-}
 
 void print_peers_connect_log(struct peer *p, char *action)
 {
@@ -44,10 +38,11 @@ void print_peers_connect_log(struct peer *p, char *action)
   free(msg);
 }
 
-
 int create_epoll(struct list *l_peers)
 {
-  int epoll_fd = init_epoll();
+  int epoll_fd = epoll_create(1);
+  if (epoll_fd == -1)
+    err(1, "cannot create epoll");
 
   for (struct node *cur = l_peers->head; cur; cur = cur->next)
   {
@@ -94,9 +89,38 @@ size_t get_msg_len(void *msg)
   return ntohl(rm->len) + 4;
 }
 
-void parse_buffer(size_t len, char *buf, struct list *l_peer, struct peer *p)
+void get_all_msg(ssize_t len, size_t mess_len, char *msg, struct peer *p)
 {
-  size_t index = 0;
+  char buf[MAX_MSG_LEN];
+  size_t get_len = len;
+  printf("get_len: %ld\n", get_len);
+  while (get_len != mess_len)
+  {
+    len = recv(p->socket, buf, mess_len - get_len, MSG_WAITALL);
+    if (len >= 1)
+    {
+      memcpy(msg + get_len, buf, len);
+      get_len += len;
+    }
+  }
+  printf("get_len: %ld\n", get_len);
+}
+
+
+void parse_buffer(ssize_t len, char *buf, struct list *l_peer, struct peer *p)
+{
+ ssize_t mess_len = get_msg_len(buf);
+  if (mess_len > len)
+  {
+    char msg[MAX_MSG_LEN];
+    memcpy(msg, buf, len);
+    get_all_msg(len, mess_len, msg, p);
+    print_msg_log(p, msg, "recv: ");
+    message_handler(msg, p, l_peer);
+    return;
+  }
+
+  ssize_t index = 0;
   while (index < len)
   {
     char *cur = buf + index;
@@ -137,21 +161,18 @@ void send_peer(struct peer *p, int sock)
   char *msg = pop_front(p->q_send);
   print_msg_log(p, msg, "send: ");
   size_t len = get_msg_len(msg);
-  printf("len msg = %ld\n", len);
   send(sock, msg, len, 0);
   free(msg);
 }
 
 void handle_epoll_event(int epoll_fd, struct list *l_peer)
 {
-  struct epoll_event *events = malloc(sizeof(struct epoll_event) * 50);
-  if (!events)
-    err(1, "cannot malloc struct epoll_event");
-
+  struct epoll_event events[MAX_EVENTS];
   make_all_handshake(l_peer);
 
   int ndfs = 0;
-  while ((ndfs = epoll_wait(epoll_fd, events, 50, 1000)) != 0)
+  while ((ndfs = epoll_wait(epoll_fd, events, MAX_EVENTS, 1000)) != 0
+          && !g_client.finish)
   {
     for (int i = 0; i < ndfs; i++)
     {
@@ -165,4 +186,11 @@ void handle_epoll_event(int epoll_fd, struct list *l_peer)
         send_peer(p, sock);
     }
   }
+  for (int i = 0; i < ndfs; i++)
+  {
+    int sock = events[i].data.fd;
+    struct peer *p = get_peer_from_sock(l_peer, sock);
+    disconnect_peer(p, epoll_fd, l_peer, events + i);
+  }
+  close(epoll_fd);
 }
