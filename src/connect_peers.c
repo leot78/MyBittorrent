@@ -139,9 +139,11 @@ void handle_epoll_event(int epoll_fd, struct list *l_peer)
         ssize_t len = recv(sock, buf, MAX_MSG_LEN, 0);
         if (len == -1)
           printf("ERROR RECV\n");
-        printf("LEN = %ld\n", len);
         if (len > 0)
+        {
+          printf("LEN = %ld\n", len);
           parse_buffer(len, buf, l_peer, p);
+        }
       }
       else if (events[i].events & EPOLLOUT)
       {

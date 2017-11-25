@@ -35,7 +35,7 @@ void bitfield_case(struct peer *peer, char *bitfield, size_t len)
   size_t cpt = 0;
   for (unsigned j = 0; j < bitfield_len; j++)
   {
-    for (unsigned i = 0; i < 8; i++)
+    for (int i = 7; i >= 0; --i)
     {
       //peer->have[i] = bitfield[i];
       peer->have[cpt] = (bitfield[j] & (1 << i)) >> i;

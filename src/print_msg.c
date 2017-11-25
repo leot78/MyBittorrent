@@ -14,14 +14,25 @@ unsigned int get_int(char *data, size_t index)
 
 char *get_printable_bitfield(char *payload, size_t len)
 {
-  char *res = malloc(sizeof(char) * len + 1);
+  char *res = malloc(sizeof(char) * g_client.number_piece + 1);
   if (!res)
     err(1, "cannot malloc in get_printable_bitfield");
 
-  for (size_t i = 0; i < len; ++i)
-    res[i] = payload[i] + '0';
-
-  res[len] = 0;
+  size_t cpt = 0;
+  for (size_t j = 0; j < len; ++j)
+  {
+    uint8_t byte = payload[j];
+    for (int i = 7; i >= 0; i--)
+    {
+      res[cpt] = ((byte >> i) & 0x01) + '0';
+      cpt++;
+      if (cpt == g_client.number_piece)
+      {
+        res[g_client.number_piece] = 0;
+        return res;
+      }
+    }
+  }
   return res;
 }
 

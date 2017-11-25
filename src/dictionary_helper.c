@@ -1,6 +1,7 @@
 #include <err.h>
 #include <stdlib.h>
 
+#include "math.h"
 #include "dictionary.h"
 #include "list/list.h"
 #include "my_string.h"
@@ -32,5 +33,5 @@ size_t get_nb_piece(struct dictionary *dict)
 
   size_t piece_len = atoi(get_value(dict, "piece length", NULL));
 
-  return len / piece_len;
+  return (len / piece_len) + 1;
 }
