@@ -1,6 +1,9 @@
 #include <stdlib.h>
 #include <string.h>
 
+/**
+** Convert int to char*.
+*/
 char *my_itoa(long value)
 {
   int pos = 0;
@@ -27,6 +30,9 @@ char *my_itoa(long value)
   return res;
 }
 
+/**
+** Append c2 to c1.
+*/
 char *concat(char *c1, char *c2)
 {
   char *res = malloc((strlen(c1) + strlen(c2) + 1) * sizeof(char));
@@ -37,6 +43,9 @@ char *concat(char *c1, char *c2)
   return res;
 }
 
+/**
+** Append l2 char from c2 to l1 char from c1.
+*/
 char *concatn(char *c1, char *c2, size_t l1, size_t l2)
 {
   char *res = malloc((l1 + l2) * sizeof(char));
@@ -47,6 +56,9 @@ char *concatn(char *c1, char *c2, size_t l1, size_t l2)
   return res;
 }
 
+/**
+** Copy src to dest, stopping at delim.
+*/
 char *strcpy_delim(char *dest, char *src, char delim)
 {
   size_t i = 0;
