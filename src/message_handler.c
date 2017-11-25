@@ -94,6 +94,7 @@ void make_request(struct list *peer_list)
         }
         piece_len = piece_len < MAX_PIECE_LEN ? piece_len : MAX_PIECE_LEN;
         send_request(peer, i, g_client.piece_len, piece_len);
+        g_client.requested = 1;
         return;
       }
     }
@@ -114,6 +115,11 @@ void message_handler(char *message/*, size_t len*/, struct peer *peer,
                       struct list *peer_list)
 {
   if (message[0] == 0x13)
+  {
+    peer->handshaked = 1;
+    return;
+  }
+  if (!peer->handshaked)
     return;
   void *tmp = message;
   struct raw_mess *rm = tmp;

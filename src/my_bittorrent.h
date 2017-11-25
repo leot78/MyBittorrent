@@ -82,6 +82,7 @@ struct peer
   int client_choked;
   int peer_choked;
   int socket;
+  int handshaked;
   char *url;
   struct list *q_send;
 };
