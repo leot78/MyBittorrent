@@ -61,18 +61,26 @@ void have_case(struct peer *peer, uint32_t id)
   }
 }
 
+void check_have(void)
+{
+  unsigned i = 0;
+  while (i < g_client.number_piece && g_client.have[i])
+    i++;
+  g_client.finish = (i == g_client.number_piece);
+}
+
 void piece_case(struct raw_mess *raw)
 {
   raw->elt_1 = ntohl(raw->elt_1);
   raw->elt_2 = ntohl(raw->elt_2);
-  raw->elt_3 = ntohl(raw->elt_3);
-  if(g_client.requested != raw->elt_1)
+  //raw->elt_3 = ntohl(raw->elt_3);
+  if(!g_client.requested)
     return;
   char *tmp = g_client.piece + raw->elt_2;
-  tmp = memcpy(tmp, &raw->elt_3, raw->len - 8);
+  tmp = memcpy(tmp, &raw->elt_3, raw->len - 9);
 
   //A vérifier.
-  g_client.piece_len += raw->len - 8;
+  g_client.piece_len += raw->len - 9;
   g_client.requested = 0;
   size_t piece_len = g_client.piece_max_len;
   if (raw->elt_1 == g_client.number_piece - 1)
@@ -85,19 +93,19 @@ void piece_case(struct raw_mess *raw)
   //            ? piece_len : g_client.piece_max;
   if (g_client.piece_len == piece_len)
   {
-    if (check_piece(piece_len, raw->elt_1))
-    {
+    //if (check_piece(g_client.piece, g_client.piece_len, raw->elt_1))
+    //{
       write_piece(raw->elt_1);
       g_client.have[raw->elt_1] = 1;
-      g_client.piece = NULL;
-      g_client.piece_len = 0;
-      g_client.request_id = -1;
       //propagate have
-    }
+      check_have();
+    //}
+    g_client.request_id = -1;
+    g_client.piece_len = 0;
   }
 }
 
-void verify_have(size_t i)
+void verify_have(size_t i, struct peer *peer)
 {
   size_t piece_len = g_client.piece_max_len;
   if (i == g_client.number_piece - 1)
@@ -113,18 +121,18 @@ void verify_have(size_t i)
   return;
 }
 
-void find_peer(void)
+void find_peer(struct node *cur)
 {
   for (; cur; cur = cur->next)
   {
     struct peer *peer = cur->data;
     if(!peer->client_interested)
       continue;
-    for(; i < g_client.number_piece; i++)
+    for(size_t i = 0; i < g_client.number_piece; i++)
     {
       if (peer->have[i] && !g_client.have[i] && !peer->client_choked)
       {
-        verify_have(i);
+        verify_have(i, peer);
         return;
       }
     }
@@ -137,7 +145,7 @@ void make_request(struct list *peer_list)
     return;
   struct node *cur = peer_list->head;
   if (g_client.request_id == -1)
-    find_peer();
+    find_peer(cur);
   else
   {
     size_t i = g_client.request_id;
@@ -148,7 +156,7 @@ void make_request(struct list *peer_list)
         continue;
       if (peer->have[i] && !g_client.have[i] && !peer->client_choked)
       {
-        verify_have(i);
+        verify_have(i, peer);
         return;
       }
     }
@@ -165,7 +173,7 @@ void make_all_handshake(struct list *peer_list)
   }
 }
 
-int message_handler(char *message/*, size_t len*/, struct peer *peer,
+void message_handler(char *message/*, size_t len*/, struct peer *peer,
                       struct list *peer_list)
 {
   if (message[0] == 0x13)

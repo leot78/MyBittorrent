@@ -123,4 +123,6 @@ void message_handler(char *message, struct peer *peer, struct list *peer_list);
 void make_all_handshake(struct list *peer_list);
 
 int check_piece(void *data, size_t len, size_t index);
+
+void write_piece(uint32_t index);
 #endif /*! MY_BITTORRENT_H */

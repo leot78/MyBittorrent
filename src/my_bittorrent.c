@@ -24,7 +24,9 @@ void init_client(struct tracker *tracker)
   g_client.requested = 0;
   g_client.request_id = -1;
   g_client.finish = 0;
-  g_client.piece = NULL;
+  g_client.piece = calloc(g_client.piece_max_len, sizeof(char));
+  if (!g_client.piece)
+    err(1, "Could not allocate piece buffer");
   g_client.peer_id = compute_peer_id();
 }
 
