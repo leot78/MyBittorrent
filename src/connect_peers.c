@@ -110,6 +110,40 @@ void parse_buffer(size_t len, char *buf, struct list *l_peer, struct peer *p)
   }
 }
 
+void disconnect_peer(struct peer *p, int epoll_fd, struct list *l_peer,
+                     struct epoll_event *event)
+{
+  print_peers_connect_log(p, "disconnect: ");
+  pop_elt(l_peer, p);
+  epoll_ctl(epoll_fd, EPOLL_CTL_DEL, p->socket, event);
+  free_peer(p);
+}
+
+void recv_from_peer(struct peer *p, int sock, struct list *l_peer)
+{
+  char buf[MAX_MSG_LEN];
+  ssize_t len = recv(sock, buf, MAX_MSG_LEN, 0);
+  if (len == -1)
+    printf("ERROR RECV\n");
+  if (len > 0)
+  {
+    printf("LEN = %ld\n", len);
+    parse_buffer(len, buf, l_peer, p);
+  }
+}
+
+void send_peer(struct peer *p, int sock)
+{
+  char *msg = pop_front(p->q_send);
+  print_msg_log(p, msg, "send: ");
+  size_t len = get_msg_len(msg);
+  printf("len msg = %ld\n", len);
+  send(sock, msg, len, 0);
+  free(msg);
+}
+
+
+
 void handle_epoll_event(int epoll_fd, struct list *l_peer)
 {
   struct epoll_event *events = malloc(sizeof(struct epoll_event) * 50);
@@ -126,36 +160,11 @@ void handle_epoll_event(int epoll_fd, struct list *l_peer)
       int sock = events[i].data.fd;
       struct peer *p = get_peer_from_sock(l_peer, sock);
       if (events[i].events & EPOLLHUP)
-      {
-        print_peers_connect_log(p, "disconnect: ");
-        pop_elt(l_peer, p);
-        epoll_ctl(epoll_fd, EPOLL_CTL_DEL, sock, events + i);
-        close(sock);
-        printf("ndfs : %d\n", ndfs);
-      }
+        disconnect_peer(p, epoll_fd, l_peer, events + i);
       else if (events[i].events & EPOLLIN)
-      {
-        char buf[MAX_MSG_LEN];
-        ssize_t len = recv(sock, buf, MAX_MSG_LEN, 0);
-        if (len == -1)
-          printf("ERROR RECV\n");
-        if (len > 0)
-        {
-          printf("LEN = %ld\n", len);
-          parse_buffer(len, buf, l_peer, p);
-        }
-      }
-      else if (events[i].events & EPOLLOUT)
-      {
-        if (p->q_send->size)
-        {
-          char *msg = pop_front(p->q_send);
-          print_msg_log(p, msg, "send: ");
-          size_t len = get_msg_len(msg);
-          printf("len msg = %ld\n", len);
-          send(sock, msg, len, 0);
-        }
-      }
+        recv_from_peer(p, sock, l_peer);
+      else if (events[i].events & EPOLLOUT && p->q_send->size)
+        send_peer(p, sock);
     }
   }
 }

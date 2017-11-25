@@ -1,16 +1,17 @@
 #include <arpa/inet.h>
-#include <netinet/in.h>
 #include <netdb.h>
-#include <stdio.h>
+#include <netinet/in.h>
 #include <stdint.h>
+#include <stdio.h>
 #include <stdlib.h>
-#include <sys/types.h>
 #include <sys/socket.h>
+#include <sys/types.h>
+#include <unistd.h>
 
 #include "list/list.h"
 #include "my_bittorrent.h"
-#include "parsing.h"
 #include "my_string.h"
+#include "parsing.h"
 
 struct peer *init_peer(int nb_pieces, struct sockaddr_in *sa)
 {
@@ -69,10 +70,17 @@ void free_sock_list(struct list *l_sa)
   while (l_sa->size)
   {
     struct peer *peer = pop_front(l_sa);
-    free(peer->sa);
-    free(peer->have);
-    free(peer->url);
-    free(peer);
+    free_peer(peer);
   }
   free(l_sa);
+}
+
+void free_peer(struct peer *peer)
+{
+  close(peer->socket);
+  free_list(peer->q_send);
+  free(peer->sa);
+  free(peer->have);
+  free(peer->url);
+  free(peer);
 }
