@@ -142,8 +142,6 @@ void send_peer(struct peer *p, int sock)
   free(msg);
 }
 
-
-
 void handle_epoll_event(int epoll_fd, struct list *l_peer)
 {
   struct epoll_event *events = malloc(sizeof(struct epoll_event) * 50);
