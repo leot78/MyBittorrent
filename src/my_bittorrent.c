@@ -11,6 +11,9 @@
 #include "print_log.h"
 #include "connect_peers.h"
 
+/**
+** Initialize the global struct client.
+*/
 void init_client(struct tracker *tracker)
 {
   g_client.tracker = tracker;
@@ -90,21 +93,11 @@ int opt_print(struct tracker *tracker)
   return 0;
 }
 
-int main(int argc, char **argv)
+/**
+** Run BitTorrent with given file and opts.
+*/
+int run(char *filepath, enum options opt)
 {
-  if (argc < 2 || argc > 4)
-  {
-    printf("Usage : %s [options] [files]\n", argv[0]);
-    return 0;
-  }
-  int index = 1;
-  enum options opt = parse_options(argc, argv, &index);
-  if (index >= argc)
-  {
-    printf("Usage : %s [options] [files]\n", argv[0]);
-    return 0;
-  }
-  char *filepath = argv[index];
   struct tracker *tracker = parse_file(filepath);
   init_client(tracker);
   
@@ -113,7 +106,6 @@ int main(int argc, char **argv)
 
   init_log(opt & VERBOSE);
   struct list *peer_list = get_peers(tracker);
-
 
   if (opt & PEERS)
     return opt_peers(peer_list, tracker);
@@ -129,4 +121,22 @@ int main(int argc, char **argv)
   delete_log_info();
   delete_client();
   return 0;
+}
+
+int main(int argc, char **argv)
+{
+  if (argc < 2 || argc > 4)
+  {
+    printf("Usage : %s [options] [files]\n", argv[0]);
+    return 0;
+  }
+  int index = 1;
+  enum options opt = parse_options(argc, argv, &index);
+  if (index >= argc)
+  {
+    printf("Usage : %s [options] [files]\n", argv[0]);
+    return 0;
+  }
+  char *filepath = argv[index];
+  return run(filepath, opt);
 }
