@@ -2,6 +2,9 @@
 
 #include "my_bittorrent.h"
 
+/**
+** Write piece with given index in file from dictionary.
+*/
 void write_piece(uint32_t index)
 {
   struct dictionary *info_dict = get_value(g_client.tracker->dict,
