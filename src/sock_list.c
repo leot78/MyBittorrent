@@ -18,7 +18,7 @@ struct peer *init_peer(int nb_pieces, struct sockaddr_in *sa)
   if (!peer)
     err(1, "Could not allocate peer struct");
   peer->sa = sa;
-  int *have = malloc(sizeof(int) * nb_pieces);
+  int *have = calloc(nb_pieces, sizeof(int));
   if (!have)
     err(1, "Could not allocate have array");
   peer->have = have;
