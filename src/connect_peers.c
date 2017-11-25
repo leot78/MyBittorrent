@@ -93,7 +93,6 @@ void get_all_msg(ssize_t len, size_t mess_len, char *msg, struct peer *p)
 {
   char buf[MAX_MSG_LEN];
   size_t get_len = len;
-  printf("get_len: %ld\n", get_len);
   while (get_len != mess_len)
   {
     len = recv(p->socket, buf, mess_len - get_len, MSG_WAITALL);
@@ -103,7 +102,6 @@ void get_all_msg(ssize_t len, size_t mess_len, char *msg, struct peer *p)
       get_len += len;
     }
   }
-  printf("get_len: %ld\n", get_len);
 }
 
 
@@ -150,10 +148,7 @@ void recv_from_peer(struct peer *p, int sock, struct list *l_peer)
   if (len == -1)
     printf("ERROR RECV\n");
   if (len > 0)
-  {
-    printf("LEN = %ld\n", len);
     parse_buffer(len, buf, l_peer, p);
-  }
 }
 
 void send_peer(struct peer *p, int sock)

@@ -31,6 +31,7 @@ struct peer *init_peer(int nb_pieces, struct sockaddr_in *sa)
   peer->nb_pieces = nb_pieces;
   peer->url = NULL;
   peer->q_send = init_list();
+  peer->socket = -1;
   return peer;
 }
 
@@ -78,7 +79,8 @@ void free_sock_list(struct list *l_sa)
 
 void free_peer(struct peer *peer)
 {
-  close(peer->socket);
+  if (peer->socket != -1)
+    close(peer->socket);
   free_list(peer->q_send);
   free(peer->sa);
   free(peer->have);

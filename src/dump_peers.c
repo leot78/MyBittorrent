@@ -18,7 +18,7 @@
 void get_peers_url(struct sockaddr_in *sa, char *host, char *service)
 {
   getnameinfo((struct sockaddr*)sa, sizeof(struct sockaddr), host,
-              HOST_LEN, service, SERVICE_LEN, 0);
+              HOST_LEN, service, SERVICE_LEN, NI_NUMERICHOST | NI_NUMERICSERV);
 }
 
 void set_peers_url(struct peer *peer)
