@@ -143,5 +143,6 @@ struct tracker *parse_file(const char *path)
 
   struct tracker *tr = parse_content(content);
   free(content);
+  tr->info_hash = NULL;
   return tr;
 }
