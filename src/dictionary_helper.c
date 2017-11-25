@@ -33,5 +33,7 @@ size_t get_nb_piece(struct dictionary *dict)
 
   size_t piece_len = atoi(get_value(dict, "piece length", NULL));
 
+  if (len % piece_len == 0)
+    return len / piece_len;
   return (len / piece_len) + 1;
 }
