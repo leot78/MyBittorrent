@@ -7,6 +7,9 @@
 #include "my_string.h"
 #include "print_log.h"
 
+/**
+** Write received data in userdata.
+*/
 size_t write_callback(char *ptr, size_t size, size_t nmemb, void *userdata)
 {
   size_t t_size = size * nmemb;
@@ -25,6 +28,9 @@ size_t write_callback(char *ptr, size_t size, size_t nmemb, void *userdata)
   return t_size;
 }
 
+/**
+** Return index of start of port.
+*/
 size_t get_end_addr(char *urlp)
 {
   size_t i = 0;
@@ -37,18 +43,9 @@ size_t get_end_addr(char *urlp)
   return i;
 }
 
-/*char *get_url(char *urlp, size_t sep_pos)
-{
-  size_t len_urlp = strlen(urlp);
-  char *url = malloc(sizeof(char)
-              * (len_urlp + 1 - strlen(urlp + sep_pos)));
-  if (!url)
-    err(1, "Could not allocate string url");
-  url = strncpy(url, urlp, sep_pos);
-  url[sep_pos] = '\0';
-  return url;
-}*/
-
+/**
+** Concatene given informations to prepare GET request
+*/
 char *prepare_request(char *urlp, unsigned char *info_hash,
                       CURL *handle)
 {
@@ -72,6 +69,9 @@ char *prepare_request(char *urlp, unsigned char *info_hash,
   return get_request;
 }
 
+/**
+** Send GET request to get raw list of peers from tracker.
+*/
 char *get_tracker(char *urlp, unsigned char *sha1)
 {
   char *msg = concat("requesting peers to ", urlp);
@@ -82,21 +82,17 @@ char *get_tracker(char *urlp, unsigned char *sha1)
   CURL *handle = curl_easy_init();
   char *port = malloc(sizeof(char) * 6);
   port = strcpy_delim(port, urlp + sep_pos, '/');
-  //urlp = "http://acu-tracker-1.pie.cri.epita.net:6969";
   char *request = prepare_request(urlp, sha1, handle);
   free(port);
   struct data_chunk buff;
   buff.size = 0;
   buff.data = malloc(sizeof(char));
-  if (!buff.data)
-    err(1, "Could not allocate first buff.data for curl GET");
 
   char errbuff[CURL_ERROR_SIZE];
   curl_easy_setopt(handle, CURLOPT_URL, request);
   curl_easy_setopt(handle, CURLOPT_WRITEFUNCTION, write_callback);
   curl_easy_setopt(handle, CURLOPT_WRITEDATA, &buff);
-  curl_easy_setopt(handle, CURLOPT_ERRORBUFFER, &errbuff);                                                                                                       
-  //curl_easy_setopt(handle, CURLOPT_VERBOSE, 1L);
+  curl_easy_setopt(handle, CURLOPT_ERRORBUFFER, &errbuff);
   int res = curl_easy_perform(handle);
   curl_easy_cleanup(handle);
   curl_global_cleanup();
