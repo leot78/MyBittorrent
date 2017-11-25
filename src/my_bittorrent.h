@@ -117,8 +117,10 @@ char *get_hash(unsigned char *hash, size_t size);
 struct peer *create_sock(struct raw_addr *ra, int nb_pieces);
 struct list *decode_bin(char *binaries, int nb_pieces);
 void free_sock_list(struct list *l_sa);
+void free_peer(struct peer *peer);
 
 void message_handler(char *message, struct peer *peer, struct list *peer_list);
 void make_all_handshake(struct list *peer_list);
 
+int check_piece(void *data, size_t len, size_t index);
 #endif /*! MY_BITTORRENT_H */
