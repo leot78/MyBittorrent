@@ -9,6 +9,9 @@
 
 static size_t size;
 
+/**
+** get the number of digits in a number
+*/
 size_t nb_len(size_t nb)
 {
   size_t len = 1;
@@ -21,6 +24,9 @@ size_t nb_len(size_t nb)
   return len;
 }
 
+/**
+** bencode a number
+*/
 char *bencode_number(char *value, char *str, size_t *index)
 {
   size_t number = atoi(value);
@@ -39,6 +45,9 @@ char *bencode_number(char *value, char *str, size_t *index)
   return str;
 }
 
+/**
+** bencode a string
+*/
 char *bencode_string(char *value, size_t len, char *str, size_t *index)
 {
   size_t size_nb = nb_len(len);
@@ -59,6 +68,9 @@ char *bencode_string(char *value, size_t len, char *str, size_t *index)
   return str;
 }
 
+/**
+** bencode a list
+*/
 char *bencode_list(struct list *l, char *str, size_t *index)
 {
   size += 2;
@@ -87,6 +99,9 @@ char *bencode_list(struct list *l, char *str, size_t *index)
   return str;
 }
 
+/**
+** bencode a dictionary
+*/
 char *bencode_dict(struct dictionary *dict, char *str, size_t *index)
 {
   size += 2;
@@ -117,6 +132,9 @@ char *bencode_dict(struct dictionary *dict, char *str, size_t *index)
   return str;
 }
 
+/**
+** get the bencode string of a dictionary
+*/
 char *get_bencode(struct dictionary *dict, size_t *len)
 {
   size_t index = 0;

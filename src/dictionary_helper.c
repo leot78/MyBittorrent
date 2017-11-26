@@ -6,6 +6,9 @@
 #include "list/list.h"
 #include "my_string.h"
 
+/**
+** get the len of data to download
+*/
 size_t get_len_from_files(struct dictionary *dict)
 {
   char *str_len = get_value(dict, "length", NULL);
@@ -27,6 +30,9 @@ size_t get_len_from_files(struct dictionary *dict)
   return len;
 }
 
+/**
+** get the number of piece
+*/
 size_t get_nb_piece(struct dictionary *dict)
 {
   size_t len = get_len_from_files(dict);

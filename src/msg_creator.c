@@ -7,6 +7,9 @@
 #include "my_string.h"
 #include "msg_creator.h"
 
+/**
+** generate the handshake
+*/
 char *generate_handshake(unsigned char *info_hash, char *peer_id)
 {
   char *tmp = (char*)info_hash;
@@ -23,12 +26,18 @@ char *generate_handshake(unsigned char *info_hash, char *peer_id)
   return handshake;
 }
 
+/**
+** send an handshake to a peer
+*/
 void send_handshake(struct peer *p, unsigned char *info_hash, char *peer_id)
 {
   char *handshake = generate_handshake(info_hash, peer_id);
   add_tail(p->q_send, handshake);
 }
 
+/**
+** send a message without payload
+*/
 void send_simple_msg(struct peer *p, enum type_simple_msg type)
 {
   char *str = calloc(1, 5);
@@ -37,6 +46,9 @@ void send_simple_msg(struct peer *p, enum type_simple_msg type)
   add_tail(p->q_send, str);
 }
 
+/**
+** send a have message
+*/
 void send_have(struct peer *p, size_t piece_index)
 {
   char *str = calloc(1, 9);
@@ -46,6 +58,9 @@ void send_have(struct peer *p, size_t piece_index)
   add_tail(p->q_send, str);
 }
 
+/**
+** send a bitfield message
+*/
 void send_bitfield(struct peer *p, size_t len, char *bitfield)
 {
   char *str = calloc(1, 5 + len);
@@ -56,6 +71,9 @@ void send_bitfield(struct peer *p, size_t len, char *bitfield)
   add_tail(p->q_send, res);
 }
 
+/**
+** send a request message
+*/
 void send_request(struct peer *p, size_t index, size_t begin, size_t length)
 {
   char *str = calloc(1, 17);
@@ -69,6 +87,9 @@ void send_request(struct peer *p, size_t index, size_t begin, size_t length)
   add_tail(p->q_send, str);
 }
 
+/**
+** send a piece message
+*/
 void send_piece(struct peer *p, size_t index, size_t begin,
                 struct block *block)
 {

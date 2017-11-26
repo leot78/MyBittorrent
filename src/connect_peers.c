@@ -18,6 +18,9 @@
 #include "my_string.h"
 #include "msg_creator.h"
 
+/**
+** print the log when a peer connect or disconnect
+*/
 void print_peers_connect_log(struct peer *p, char *action)
 {
   if (!log_is_active())
@@ -38,6 +41,9 @@ void print_peers_connect_log(struct peer *p, char *action)
   free(msg);
 }
 
+/**
+** create socket for all peers and had them in epoll
+*/
 int create_epoll(struct list *l_peers)
 {
   int epoll_fd = epoll_create(1);
@@ -69,6 +75,9 @@ int create_epoll(struct list *l_peers)
   return epoll_fd;
 }
 
+/**
+** get a peer from it socket
+*/
 struct peer *get_peer_from_sock(struct list *l_peer, int sock)
 {
   for (struct node *cur = l_peer->head; cur; cur = cur->next)
@@ -80,6 +89,9 @@ struct peer *get_peer_from_sock(struct list *l_peer, int sock)
   return NULL;
 }
 
+/**
+** get the length of a message
+*/
 size_t get_msg_len(void *msg)
 {
   char *tmp = msg;
@@ -89,6 +101,9 @@ size_t get_msg_len(void *msg)
   return ntohl(rm->len) + 4;
 }
 
+/**
+** get the whole message if it has not been whole received
+*/
 void get_all_msg(ssize_t len, size_t mess_len, char *msg, struct peer *p)
 {
   char buf[MAX_MSG_LEN];
@@ -104,7 +119,9 @@ void get_all_msg(ssize_t len, size_t mess_len, char *msg, struct peer *p)
   }
 }
 
-
+/**
+** get messages of the receivd buffer
+*/
 void parse_buffer(ssize_t len, char *buf, struct list *l_peer, struct peer *p)
 {
   ssize_t index = 0;
@@ -130,6 +147,9 @@ void parse_buffer(ssize_t len, char *buf, struct list *l_peer, struct peer *p)
   }
 }
 
+/**
+** disconnect a socket's peer and remove the peer from the list
+*/
 void disconnect_peer(struct peer *p, int epoll_fd, struct list *l_peer,
                      struct epoll_event *event)
 {
@@ -139,6 +159,9 @@ void disconnect_peer(struct peer *p, int epoll_fd, struct list *l_peer,
   free_peer(p);
 }
 
+/**
+** received data from a socket
+*/
 void recv_from_peer(struct peer *p, int sock, struct list *l_peer)
 {
   char buf[MAX_MSG_LEN];
@@ -149,6 +172,9 @@ void recv_from_peer(struct peer *p, int sock, struct list *l_peer)
     parse_buffer(len, buf, l_peer, p);
 }
 
+/**
+** send data to a socket
+*/
 void send_peer(struct peer *p, int sock)
 {
   char *msg = pop_front(p->q_send);
@@ -158,6 +184,9 @@ void send_peer(struct peer *p, int sock)
   free(msg);
 }
 
+/**
+** manage epoll_event for sockets
+*/
 void handle_epoll_event(int epoll_fd, struct list *l_peer)
 {
   struct epoll_event events[MAX_EVENTS];

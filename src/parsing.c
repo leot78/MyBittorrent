@@ -8,6 +8,9 @@
 #include "dictionary.h"
 #include "list/list.h"
 
+/**
+** convert a bencoded integer in number
+*/
 size_t my_atoi(char first_c, char *str, char end, size_t *index)
 {
   size_t res = 0;
@@ -25,6 +28,9 @@ size_t my_atoi(char first_c, char *str, char end, size_t *index)
   return res;
 }
 
+/**
+** parse a bencoded string
+*/
 char *parse_string(char first_c, char *str, size_t *size, size_t *index)
 {
   size_t len = my_atoi(first_c, str, ':', index);
@@ -37,6 +43,9 @@ char *parse_string(char first_c, char *str, size_t *size, size_t *index)
   return out;
 }
 
+/**
+** parse a bencoded string
+*/
 char *parse_number(char *str, size_t *index)
 {
   *index += 1;
@@ -54,6 +63,9 @@ char *parse_number(char *str, size_t *index)
   return res;
 }
 
+/**
+** parse the correct bencoded element
+*/
 struct element *get_elt(char c, char *key, char *str, size_t *index)
 {
   void *value = NULL;
@@ -80,6 +92,9 @@ struct element *get_elt(char c, char *key, char *str, size_t *index)
   return create_elt(key, value, t, size);
 }
 
+/**
+** parse a bencoded dictionary
+*/
 struct dictionary *parse_dict(char *str, size_t *index)
 {
   struct dictionary *dict = create_dict();
@@ -97,6 +112,9 @@ struct dictionary *parse_dict(char *str, size_t *index)
   return dict;
 }
 
+/**
+** parse a bencoded list
+*/
 struct list *parse_list(char *str, size_t *index)
 {
   struct list *l = init_list();
@@ -112,6 +130,9 @@ struct list *parse_list(char *str, size_t *index)
   return l;
 }
 
+/**
+** parse the bencoded content in a string
+*/
 struct tracker *parse_content(char *content)
 {
   struct tracker *tr = malloc(sizeof(struct tracker));
@@ -122,6 +143,9 @@ struct tracker *parse_content(char *content)
   return tr;
 }
 
+/**
+** parse a bencoded file
+*/
 struct tracker *parse_file(const char *path)
 {
   FILE *file = fopen(path, "r");

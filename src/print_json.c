@@ -6,6 +6,9 @@
 #include "my_bittorrent.h"
 #include "print_json.h"
 
+/**
+** print a string in JSON format
+*/
 void print_string(const char *s, size_t size)
 {
   if (!size)
@@ -26,6 +29,9 @@ void print_string(const char *s, size_t size)
   }
 }
 
+/**
+** print a list in JSON format
+*/
 void print_json_list(struct list *l, int pad)
 {
   printf("[ ");
@@ -55,6 +61,9 @@ void print_json_list(struct list *l, int pad)
 }
 
 
+/**
+** print a dictionary in JSON format
+*/
 void print_json_dict(struct dictionary *d, int pad)
 {
   printf("%*s{\n", pad, "");
@@ -75,10 +84,10 @@ void print_json_dict(struct dictionary *d, int pad)
     else if (elt->type == DICT)
     {
       printf("\n");
-      print_json_dict(elt->value, pad + 8 + strlen(elt->key));
+      print_json_dict(elt->value, pad + 4);
     }
     else if (elt->type == LIST)
-      print_json_list(elt->value, pad + 8 + strlen(elt->key));
+      print_json_list(elt->value, pad + 8);
     if (cur->next)
       printf(",");
     printf("\n");
@@ -86,6 +95,9 @@ void print_json_dict(struct dictionary *d, int pad)
   printf("%*s}", pad, "");
 }
 
+/**
+** print a structure in JSON format
+*/
 void print_json(struct tracker *tr)
 {
   print_json_dict(tr->dict, 0);

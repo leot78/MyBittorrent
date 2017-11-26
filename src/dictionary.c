@@ -4,6 +4,9 @@
 #include "dictionary.h"
 #include "list/list.h"
 
+/**
+** create a dictionary
+*/
 struct dictionary *create_dict(void)
 {
   struct dictionary *d = malloc(sizeof(struct dictionary));
@@ -16,6 +19,9 @@ struct dictionary *create_dict(void)
   return d;
 }
 
+/**
+** create element
+*/
 struct element *create_elt(char *key, void *value, enum type t, size_t size)
 {
   struct element *e = malloc(sizeof(struct element));
@@ -27,6 +33,9 @@ struct element *create_elt(char *key, void *value, enum type t, size_t size)
   return e;
 }
 
+/**
+** add an element in the dictionary
+*/
 void add_elt(struct dictionary *d, struct element *elt)
 {
   if (!d)
@@ -36,6 +45,9 @@ void add_elt(struct dictionary *d, struct element *elt)
   ++d->size;
 }
 
+/**
+** get the value from the key in a dictionary
+*/
 void *get_value(struct dictionary *d, char *key, size_t *size)
 {
   struct node *cur = d->table->head;
@@ -52,6 +64,9 @@ void *get_value(struct dictionary *d, char *key, size_t *size)
   return NULL;
 }
 
+/**
+** delete all element in a list
+*/
 void delete_list(struct list *l)
 {
   while (l->size)
@@ -68,6 +83,9 @@ void delete_list(struct list *l)
   free(l);
 }
 
+/**
+** delete all element in a dictionary
+*/
 void delete_dict(struct dictionary *d)
 {
   while (d->table->size)

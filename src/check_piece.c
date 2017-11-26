@@ -3,6 +3,9 @@
 
 #include "my_bittorrent.h"
 
+/**
+** get the hash of the piece in the dictionary
+*/
 void *get_hash_piece_from_dict(struct tracker *tr, size_t index)
 {
   struct dictionary *info_dict = get_value(tr->dict, "info", NULL);
@@ -14,7 +17,9 @@ void *get_hash_piece_from_dict(struct tracker *tr, size_t index)
   return piece;
 }
 
-
+/**
+** check if the downloaded piece have the correct sha1
+*/
 int check_piece(void *data, size_t len, size_t index)
 {
   unsigned char *hash_piece  = compute_sha1(data, len);

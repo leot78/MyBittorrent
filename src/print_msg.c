@@ -6,12 +6,18 @@
 #include "print_log.h"
 #include "my_string.h"
 
+/**
+** get an unsigned from an array of byte
+*/
 unsigned int get_int(char *data, size_t index)
 {
   return (data[index] << 24) | (data[index + 1] << 16)
           | (data[index + 2] << 8) | data[index + 3];
 }
 
+/**
+** get a string of a bitfield
+*/
 char *get_printable_bitfield(char *payload, size_t len)
 {
   char *res = malloc(sizeof(char) * g_client.number_piece + 1);
@@ -36,6 +42,9 @@ char *get_printable_bitfield(char *payload, size_t len)
   return res;
 }
 
+/**
+** build a request message
+*/
 char *concat_request(char *msg2, struct raw_mess *rm)
 {
   char *tmp = concat(msg2, "request ");
@@ -61,6 +70,10 @@ char *concat_request(char *msg2, struct raw_mess *rm)
   return tmp1;
 }
 
+
+/**
+** build a piece message
+*/
 char *concat_piece(char *msg2, struct raw_mess *rm)
 {
   char *tmp = concat(msg2, "piece ");
@@ -79,6 +92,9 @@ char *concat_piece(char *msg2, struct raw_mess *rm)
   return tmp1;
 }
 
+/**
+** build a have message
+*/
 char *concat_have(char *msg2, struct raw_mess *rm)
 {
   char *tmp = concat(msg2, "have ");
@@ -89,6 +105,9 @@ char *concat_have(char *msg2, struct raw_mess *rm)
   return res;
 }
 
+/**
+** build a bitfield message
+*/
 char *concat_bitfield(char *msg, char *msg2, struct raw_mess *rm)
 {
   char *tmp = concat(msg2, "bitfield ");
@@ -99,6 +118,9 @@ char *concat_bitfield(char *msg, char *msg2, struct raw_mess *rm)
   return res;
 }
 
+/**
+** build the correct message
+*/
 char *get_message(char *msg, char *msg2)
 {
   char *res = NULL;
@@ -128,6 +150,9 @@ char *get_message(char *msg, char *msg2)
   return res;
 }
 
+/**
+** print the correct message log
+*/
 void print_msg_log(struct peer *p, char *msg, char *mode_msg)
 {
   if (!log_is_active())

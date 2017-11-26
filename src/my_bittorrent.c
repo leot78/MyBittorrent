@@ -33,6 +33,9 @@ void init_client(struct tracker *tracker)
   g_client.peer_id = compute_peer_id();
 }
 
+/**
+** parse options
+*/
 enum options parse_options(int argc, char **argv, int *index)
 {
   enum options opt = NONE;
@@ -56,6 +59,9 @@ enum options parse_options(int argc, char **argv, int *index)
   return opt;
 }
 
+/**
+** get the first 'size' bytes in hexadecimal of a hash
+*/
 char *get_hash(unsigned char *hash, size_t size)
 {
   char *res = malloc(size * 2 + 1);
@@ -67,6 +73,9 @@ char *get_hash(unsigned char *hash, size_t size)
   return res;
 }
 
+/**
+** free the global client
+*/
 void delete_client(void)
 {
   free(g_client.have);
@@ -74,6 +83,9 @@ void delete_client(void)
   free(g_client.peer_id);
 }
 
+/**
+** call the needed functions for '--dump-peers'
+*/
 int opt_peers(struct list *peer_list, struct tracker *tracker)
 {
   if (peer_list->size == 0)
@@ -85,6 +97,9 @@ int opt_peers(struct list *peer_list, struct tracker *tracker)
   return 0;
 }
 
+/**
+** call the needed functions for '--pretty-print-torrent-file'
+*/
 int opt_print(struct tracker *tracker)
 {
   print_json(tracker);
