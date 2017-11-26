@@ -107,7 +107,7 @@ void get_all_msg(ssize_t len, size_t mess_len, char *msg, struct peer *p)
 
 void parse_buffer(ssize_t len, char *buf, struct list *l_peer, struct peer *p)
 {
- ssize_t mess_len = get_msg_len(buf);
+  ssize_t mess_len = get_msg_len(buf);
   if (mess_len > len)
   {
     char msg[MAX_MSG_LEN];
@@ -123,6 +123,15 @@ void parse_buffer(ssize_t len, char *buf, struct list *l_peer, struct peer *p)
   {
     char *cur = buf + index;
     size_t msg_len = get_msg_len(cur);
+    if (msg_len > len - index)
+    {
+      char msg[MAX_MSG_LEN];
+      memcpy(msg, buf, len - index);
+      get_all_msg(len - index, msg_len, msg, p);
+      print_msg_log(p, msg, "recv: ");
+      message_handler(msg, p, l_peer);
+      return;
+    }
     if (msg_len > 4)
     {
       print_msg_log(p, cur, "recv: ");
