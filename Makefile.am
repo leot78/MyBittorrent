@@ -34,3 +34,9 @@ my_bittorrent_SOURCES = src/dictionary.c \
 												src/message_handler.c \
 												src/check_piece.c \
 												src/piece_write.c
+
+EXTRA_DIST = tests/test_suite.sh \
+						 tests/torrents/*.torrent
+
+check-local:
+	$(srcdir)/tests/test_suite.sh
