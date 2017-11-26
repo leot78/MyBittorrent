@@ -12,6 +12,9 @@
 #include "my_string.h"
 #include "string.h"
 
+/**
+** Generate a peer_id, with random ending numbers.
+*/
 char *compute_peer_id(void)
 {
   static int seeded = 0;
@@ -32,6 +35,9 @@ char *compute_peer_id(void)
   return peer;
 }
 
+/**
+** Return url of from tracker.
+*/
 char *get_tracker_url(struct tracker *tracker)
 {
   return get_value(tracker->dict, "announce", NULL);
@@ -45,6 +51,9 @@ void delete_tracker(struct tracker *tr)
   free(tr);
 }
 
+/**
+** Compute SHA1 from given string.
+*/
 unsigned char *compute_sha1(char *info, size_t len)
 {
   unsigned char *md_value = malloc(EVP_MAX_MD_SIZE * sizeof(char));
@@ -58,20 +67,23 @@ unsigned char *compute_sha1(char *info, size_t len)
   return md_value;
 }
 
+/**
+** Return the info_dictionary from dictionary.
+*/
 struct dictionary *get_info_dict(struct dictionary *d)
 {
   return get_value(d, "info", NULL);
 }
 
+/**
+** Get info_dictionary from tracker and return its SHA1.
+*/
 unsigned char *get_info_hash(struct tracker *tr)
 {
   struct dictionary *info_dict = get_info_dict(tr->dict);
 
   size_t size = 0;
   char *info_encode = get_bencode(info_dict, &size);
-  //print_string(info_encode, size);
-  //printf("info encode: ");
-  //printf("\n");
   unsigned char *hash = compute_sha1(info_encode, size);
   tr->info_hash = hash;
   free(info_encode);
