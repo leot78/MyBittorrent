@@ -1,3 +1,4 @@
+AM_CFLAGS = -Wall -Werror -Wextra -std=c99 -pedantic
 bin_PROGRAMS = my-bittorrent
 my_bittorrent_SOURCES = src/dictionary.c \
 												src/dictionary.h \

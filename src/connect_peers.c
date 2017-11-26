@@ -122,7 +122,7 @@ void parse_buffer(ssize_t len, char *buf, struct list *l_peer, struct peer *p)
   while (index < len)
   {
     char *cur = buf + index;
-    size_t msg_len = get_msg_len(cur);
+    ssize_t msg_len = get_msg_len(cur);
     if (msg_len > len - index)
     {
       char msg[MAX_MSG_LEN];
