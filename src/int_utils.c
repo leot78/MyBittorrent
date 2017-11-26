@@ -4,7 +4,6 @@
 
 char *uint32_to_char_net(char *res, uint32_t n)
 {
-  //n = htonl(n);
   size_t shift = 8 * 3;
   for (size_t i = 0; i < 4; ++i)
   {

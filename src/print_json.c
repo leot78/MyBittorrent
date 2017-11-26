@@ -8,9 +8,7 @@
 
 void print_string(const char *s, size_t size)
 {
-  /*if (size > 200)
-    printf("<too much data>");
-  else*/ if (!size)
+  if (!size)
     printf("%s", s);
   else
   {
@@ -30,10 +28,8 @@ void print_string(const char *s, size_t size)
 
 void print_json_list(struct list *l, int pad)
 {
-  //printf("%*s[", pad, "");
   printf("[ ");
-  struct node *cur = l->head;
-  for (; cur; cur = cur->next)
+  for (struct node *cur = l->head; cur; cur = cur->next)
   {
     struct element *elt = cur->data;
 
@@ -47,14 +43,10 @@ void print_json_list(struct list *l, int pad)
     else if (elt->type == DICT)
     {
       printf("\n");
-      struct dictionary *dict = elt->value;
-      print_json_dict(dict, pad + 4);
+      print_json_dict(elt->value, pad + 4);
     }
     else if (elt->type == LIST)
-    {
-      struct list *l = elt->value;
-      print_json_list(l, pad + 8);
-    }
+      print_json_list(elt->value, pad + 8);
     if (cur->next)
       printf(",");
     printf(" ");
@@ -66,8 +58,7 @@ void print_json_list(struct list *l, int pad)
 void print_json_dict(struct dictionary *d, int pad)
 {
   printf("%*s{\n", pad, "");
-  struct node *cur = d->table->head;
-  for (; cur; cur = cur->next)
+  for (struct node *cur = d->table->head; cur; cur = cur->next)
   {
     struct element *elt = cur->data;
     printf("%*s\"", pad + 4, "");
@@ -84,15 +75,10 @@ void print_json_dict(struct dictionary *d, int pad)
     else if (elt->type == DICT)
     {
       printf("\n");
-      struct dictionary *dict = elt->value;
-      print_json_dict(dict, pad + 8 + strlen(elt->key));
+      print_json_dict(elt->value, pad + 8 + strlen(elt->key));
     }
     else if (elt->type == LIST)
-    {
-      //printf("\n");
-      struct list *l = elt->value;
-      print_json_list(l, pad + 8 + strlen(elt->key));
-    }
+      print_json_list(elt->value, pad + 8 + strlen(elt->key));
     if (cur->next)
       printf(",");
     printf("\n");

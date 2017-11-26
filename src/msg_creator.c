@@ -53,7 +53,6 @@ void send_bitfield(struct peer *p, size_t len, char *bitfield)
   str = uint32_to_char_net(str, 1 + len);
   char *res = concatn(str, bitfield, 5, len);
   free(str);
-  //free(bitfield);
   add_tail(p->q_send, res);
 }
 
@@ -82,8 +81,6 @@ void send_piece(struct peer *p, size_t index, size_t begin,
 
   char *res = concatn(str, block->data, 13, block->size);
   free(str);
-  //free(block->data);
-  //free(block);
 
   add_tail(p->q_send, res);
 }

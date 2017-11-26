@@ -36,14 +36,15 @@ char *get_printable_bitfield(char *payload, size_t len)
   return res;
 }
 
-char *concat_request(char *res, struct raw_mess *rm)
+char *concat_request(char *msg2, struct raw_mess *rm)
 {
+  char *tmp = concat(msg2, "request ");
   char *index = my_itoa(ntohl(rm->elt_1));
   char *begin = my_itoa(ntohl(rm->elt_2));
   char *len = my_itoa(ntohl(rm->elt_3));
 
-  char *tmp1 = concat(res, index);
-  free(res);
+  char *tmp1 = concat(tmp, index);
+  free(tmp);
   char *tmp2 = concat(tmp1, " ");
   free(tmp1);
   tmp1 = concat(tmp2, begin);
@@ -60,13 +61,14 @@ char *concat_request(char *res, struct raw_mess *rm)
   return tmp1;
 }
 
-char *concat_piece(char *res, struct raw_mess *rm)
+char *concat_piece(char *msg2, struct raw_mess *rm)
 {
+  char *tmp = concat(msg2, "piece ");
   char *index = my_itoa(ntohl(rm->elt_1));
   char *begin = my_itoa(ntohl(rm->elt_2));
 
-  char *tmp1 = concat(res, index);
-  free(res);
+  char *tmp1 = concat(tmp, index);
+  free(tmp);
   char *tmp2 = concat(tmp1, " ");
   free(tmp1);
   tmp1 = concat(tmp2, begin);
@@ -77,6 +79,55 @@ char *concat_piece(char *res, struct raw_mess *rm)
   return tmp1;
 }
 
+char *concat_have(char *msg2, struct raw_mess *rm)
+{
+  char *tmp = concat(msg2, "have ");
+  char *index = my_itoa(ntohl(rm->elt_1));
+  char *res = concat(tmp, index);
+  free(tmp);
+  free(index);
+  return res;
+}
+
+char *concat_bitfield(char *msg, char *msg2, struct raw_mess *rm)
+{
+  char *tmp = concat(msg2, "bitfield ");
+  char *bitfield = get_printable_bitfield(msg + 5, ntohl(rm->len) - 1);
+  char *res = concat(tmp, bitfield);
+  free(tmp);
+  free(bitfield);
+  return res;
+}
+
+char *get_message(char *msg, char *msg2)
+{
+  char *res = NULL;
+  struct raw_mess *rm = (void *) msg;
+  if (msg[0] == 0x13)
+    res = concat(msg2, "handshake");
+  else if (ntohl(rm->len) <= 0)
+    free(msg2);
+  else if (rm->id == 0)
+    res = concat(msg2, "choke");
+  else if (rm->id == 1)
+    res = concat(msg2, "unchoke");
+  else if (rm->id == 2)
+    res = concat(msg2, "interested");
+  else if (rm->id == 3)
+    res = concat(msg2, "not interested");
+  else if (rm->id == 4)
+    res = concat_have(msg2, rm);
+  else if (rm->id == 5)
+    res = concat_bitfield(msg, msg2, rm);
+  else if (rm->id == 6)
+    res = concat_request(msg2, rm);
+  else if (rm->id == 7)
+    res = concat_piece(msg2, rm);
+  else
+    res = concat(msg2, "unknown option");
+  return res;
+}
+
 void print_msg_log(struct peer *p, char *msg, char *mode_msg)
 {
   if (!log_is_active())
@@ -85,62 +136,9 @@ void print_msg_log(struct peer *p, char *msg, char *mode_msg)
   char *msg1 = concat(mode_msg, p->url);
   char *msg2 = concat(msg1, ": ");
   free(msg1);
+  char *res = get_message(msg, msg2); 
 
-  char *res = NULL;
-  char *tmp = NULL;
-  struct raw_mess *rm = (void *) msg;
-  if (msg[0] == 0x13)
-    res = concat(msg2, "handshake");
-  else if (ntohl(rm->len) <= 0)
-  {
-    free(msg2);
-    return;
-  }
-  else
-  {
-    switch(rm->id)
-    {
-      case 0:
-        res = concat(msg2, "choke");
-        break;
-      case 1:
-        res = concat(msg2, "unchoke");
-        break;
-      case 2:
-        res = concat(msg2, "interested");
-        break;
-      case 3:
-        res = concat(msg2, "not interested");
-        break;
-      case 4:
-        tmp = concat(msg2, "have ");
-        char *index = my_itoa(ntohl(rm->elt_1));
-        res = concat(tmp, index);
-        free(tmp);
-        free(index);
-        break;
-      case 5:
-        tmp = concat(msg2, "bitfield ");
-        char *bitfield = get_printable_bitfield(msg + 5, ntohl(rm->len) - 1);
-        res = concat(tmp, bitfield);
-        free(tmp);
-        free(bitfield);
-        break;
-      case 6:
-        tmp = concat(msg2, "request ");
-        res = concat_request(tmp, rm);
-        break;
-      case 7:
-        tmp = concat(msg2, "piece ");
-        res = concat_piece(tmp, rm);
-        break;
-      default:
-        res = concat(msg2, "unknown option");
-        break;
-    }
-  }
   free(msg2);
-
   print_log("msg", res);
   free(res);
 }

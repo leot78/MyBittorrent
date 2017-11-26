@@ -137,7 +137,9 @@ struct tracker *parse_file(const char *path)
     err(1, "cannot malloc in parse_file");
 
   rewind(file);
-  fread(content, 1, size_file, file);
+  int fr = fread(content, 1, size_file, file);
+  if (fr == -1)
+    err(1, "cannot fread)");
   content[size_file] = 0;
   fclose(file);
 

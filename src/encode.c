@@ -27,13 +27,13 @@ char *bencode_number(char *value, char *str, size_t *index)
   size_t size_nb = nb_len(number);
   size += size_nb + 2;
   str = realloc(str, size);
-  
+
   str[*index] = 'i';
   *index += 1;
-  
+
   strncpy(str + *index, value, size_nb);
   *index += size_nb;
-  
+
   str[*index] = 'e';
   *index += 1;
   return str;
@@ -54,7 +54,7 @@ char *bencode_string(char *value, size_t len, char *str, size_t *index)
 
   if (len)
     memcpy(str + *index, value, len);
-  
+
   *index += len;
   return str;
 }
