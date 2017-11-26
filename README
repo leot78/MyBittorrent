@@ -1,0 +1,22 @@
+                                 MYBITTORRENT
+
+A simple program allowing to download simple file following the official
+BitTorrent protocol.
+
+                                HOW TO INSTALL
+
+./bootstrap
+./configure
+make
+To verify the installation, use: make check
+
+                                  HOW TO USE
+
+./mybittorrent <options> <file.torrent>
+
+options:
+  --verbose: Print the logs.
+  --pretty-print-torrent-file: Print the given bencoded dict in JSON format.
+  --dump-peers: Print the ip:port of peer given by tracker.
+
+You can use given .torrent in ./test/torrent
