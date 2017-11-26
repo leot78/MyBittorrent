@@ -13,6 +13,9 @@
 #include "my_string.h"
 #include "parsing.h"
 
+/**
+** Initialize a #peer with given parameters.
+*/
 struct peer *init_peer(int nb_pieces, struct sockaddr_in *sa)
 {
   struct peer *peer = malloc(sizeof(struct peer));
@@ -35,6 +38,9 @@ struct peer *init_peer(int nb_pieces, struct sockaddr_in *sa)
   return peer;
 }
 
+/**
+** Create sockaddress and peer, return peer.
+*/
 struct peer *create_sock(struct raw_addr *ra, int nb_pieces)
 {
   struct in_addr addr;
@@ -52,13 +58,15 @@ struct peer *create_sock(struct raw_addr *ra, int nb_pieces)
   return peer;
 }
 
+/**
+** Create peer_list from binaries received by GET request.
+*/
 struct list *decode_bin(char *binaries, int nb_pieces)
 {
   struct tracker *tr = parse_content(binaries);
   tr->info_hash = NULL;
   size_t size = 0;
   struct raw_addr *ra = get_value(tr->dict, "peers", &size);
-  //get raw address
   struct list *peer_list = init_list();
   for (unsigned i = 0; i < size; i+=6, ra++)
     add_front(peer_list, create_sock(ra, nb_pieces));
@@ -67,6 +75,9 @@ struct list *decode_bin(char *binaries, int nb_pieces)
   return peer_list;
 }
 
+/**
+** Free peer list.
+*/
 void free_sock_list(struct list *l_sa)
 {
   while (l_sa->size)
@@ -77,6 +88,9 @@ void free_sock_list(struct list *l_sa)
   free(l_sa);
 }
 
+/**
+** Free given peer.
+*/
 void free_peer(struct peer *peer)
 {
   if (peer->socket != -1)
